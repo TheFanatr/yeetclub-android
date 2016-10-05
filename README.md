@@ -331,7 +331,7 @@ Please keep in mind that I built this in over a weekend (72 hours, as of 2016-09
 
 ### 5.0.1 The Feed
 
-Consider contributing to the following classes: **1) Fragment1** (the feed), **2) FeedAdapter** (the recycler adapter for the feed), 3) **EndlessRecyclerOnScrollListener**, and 4) **LoadingRowRecyclerAdapter** (I have to yet to integrate these two classes in the feed so there is a hard limit to the number of posts that are displayed, determined by the Parse query limit—although why people would need to scroll that much is not obvious to me).
+Consider contributing to the following classes: **1) Fragment1** (the feed), **2) FeedAdapter** (the recycler adapter for the feed), 3) **EndlessRecyclerOnScrollListener**, and 4) **LoadingRowRecyclerAdapter** (I have to yet to integrate these two classes into the feed). Loading a fixed number of items per full scroll would certainly reduce the load of our RecyclerView lists when the amount of data stored becomes larger.
 
 Cacheing data for offline viewing could be another area to work on.
 

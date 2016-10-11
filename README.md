@@ -92,7 +92,7 @@ On the other hand, feel free to rebrand and repackage the app to suit your needs
 <a name="schema"/>
 ## 3.0 Database Schema
 
-The complete database schema is documented below. Without this, downloading the code probably won't be much help! That being said, there is a lot to be done here. Some of the relationships as currently set up just aren't as efficient as they could be, i.e. "likes" are not set up as objects, so we don't have a direct pointer relation between likes and designs and therefore can't do interesting things such as see who has "liked" your design without some very messy code. I will look at providing a roadmap for improving the database in the near future, and suggestions are always welcome.
+The complete database schema is documented below. Without configuring the following classes and attributes in your own Parse dashboard, downloading the source code probably won't be much help!
 
 <a name="classes"/>
 ### 3.1 Classes

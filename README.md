@@ -1,6 +1,6 @@
 
 
-| ![alt tag](http://www.hypercycle.co/images/yc.png) | ![alt tag](http://www.hypercycle.co/images/yeet-club-banner.png) |
+| ![alt tag](http://www.elgami.coc/images/yc.png) | ![alt tag](http://www.elgami.com/images/yeet-club-banner.png) |
 |------|----------|
 
 # Yeet Club - Exclusive Network

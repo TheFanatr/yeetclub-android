@@ -343,6 +343,14 @@ Displaying and loading images in the feed more efficiently is definitey an area 
 
 Given that Yeet is perhaps the single class that is of any significant importance to the app, I did not set up the data model in the typical way (see http://archive.oreilly.com/pub/a/onjava/2002/02/06/jdo1.html), so this part of the code could definitely be made more efficient.
 
+### 5.0.4 Notifications Stacking
+
+Currently, notifications come one at a time. If a user receives multiple notifications they are forced to manually clear each notification individually.
+
+Instead, we want notifications to stack in one group notification, where the the number of notifications is incremented. The new group notification should be titled "# new interactions" and provide a preview of each of the most recent yeets. Clicking on this combined notification will bring the user to the notifications activity.
+
+Twitter is an excellent example of how this should work. Android provides a way to do this (https://opbeat.com/community/posts/building-stack-notifications-on-android/) but we will need to integrate with Parse Cloud.
+
 <hr>
 
 <a name="libs"/>

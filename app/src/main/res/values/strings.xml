@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="parse_app_id" translatable="false"></string>
+    <string name="parse_client_key" translatable="false"></string>
+    <string name="facebook_app_id" translatable="false"></string>
+
+    <string name="app_name">Yeet Club</string>
+
+    <string name="file_permissions">You need to enable file permissions to see most of the app. Click here to enable file permissions.</string>
+
+    <string name="drawer_item_profile">Yofe</string>
+    <string name="notifications_title">Yotificayshes</string>
+    <string name="add_comment">Yeet something ints you monk!</string>
+
+    <string name="empty_space" translatable="false"> </string>
+    <string name="edit_profile_website">Website</string>
+    <string name="edit_profile_username">Username</string>
+    <string name="edit_profile_name">Full Name</string>
+    <string name="edit_profile_title">Yedit Yofe</string>
+    <string name="drawer_item_edit_profile">Yedit Yofe</string>
+    <string name="drawer_item_home">Yome Yase</string>
+    <string name="drawer_item_create">Yite Yeet</string>
+    <string name="drawer_item_notifications">Yotificayshes</string>
+    <string name="drawer_item_logout">Yog Yout</string>
+    <string name="repes">Reeps</string>
+    <string name="edit_profile_bae">Bae</string>
+    <string name="main_drawer_load">Load New Image</string>
+    <string name="main_action_rotate">Rotate Image</string>
+    <string name="main_action_crop">Crop Image</string>
+    <string name="content_desc_like">Like</string>
+    <string name="settings_turn_sound_off">Turn Sound Off</string>
+    <string name="sounds_off">Applications sounds have been turned off</string>
+    <string name="content_desc_reply">Reply</string>
+    <string name="reep">Reep</string>
+    <string name="reep_desc">Aren\'tcha gonna reep me?</string>
+    <string name="null_content_desc" />
+    <string name="content_desc_profile_picture">Profile Picture</string>
+    <string name="_0">0</string>
+    <string name="_at">\@</string>
+    <string name="n">\n</string>
+    <string name="content_desc_default_profile_picture">Default Profile Picture</string>
+    <string name="yaanich_news">Yaanich News</string>
+    <string name="drawer_item_yaanich_news">Yaanich News</string>
+    <string name="content_desc_exit">Exit</string>
+    <string name="yeeeet">Yeeeet!!!</string>
+    <string name="rant">Rant</string>
+    <string name="x">X</string>
+    <string name="go_in">Go In!!!</string>
+    <string name="premium_content">Premium Content</string>
+    <string name="see_more_comments">See More Comments</string>
+    <string name="premium_content_desc">This Yeet is Hereby\nOfficially Certified\n100% Guaranteed\nPremium Content.</string>
+    <string name="mabes_reep_something_ints">Mabes reep something ints?</string>
+    <string name="in_reply_to">In reply to</string>
+    <string name="previous_reet">Previous Reet:</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="drawer_item_settings">Settings</string>
+    <string name="could_not_retrieve">Could not retrieve messages</string>
+    <string name="loading">Loading…</string>
+    <string name="user_uploaded_image">User-uploaded image</string>
+    <string name="change_password">Change Password</string>
+    <string name="forgot_password_too_bad">Forgot password? Too bad!</string>
+    <string name="new_password_again">New password, again</string>
+    <string name="new_password">New password</string>
+    <string name="current_password">Current password</string>
+    <string name="this_message_has_been_liked">This message has been liked</string>
+    <string name="settings">Settings</string>
+    <string name="yeet_deleted">This Yeet was deleted :(</string>
+</resources>

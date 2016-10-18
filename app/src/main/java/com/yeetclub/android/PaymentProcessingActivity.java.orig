@@ -1,0 +1,730 @@
+package com.elgami.customizer;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.devmarvel.creditcardentry.library.CreditCard;
+import com.devmarvel.creditcardentry.library.CreditCardForm;
+import com.elgami.application.GlobalApplication;
+import com.elgami.customizer.fragment.ErrorDialogFragment;
+import com.elgami.customizer.fragment.ProgressDialogFragment;
+import com.elgami.parse.ParseConstants;
+import com.elgami.parse.ParseHelper;
+import com.elgami.products.ElgamiProduct;
+import com.elgami.products.ElgamiProductFactory;
+import com.elgami.products.Shirt;
+import com.elgami.utility.S3Helper;
+import com.parse.FunctionCallback;
+import com.parse.ParseAnonymousUtils;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+import com.stripe.android.Stripe;
+import com.stripe.android.TokenCallback;
+import com.stripe.android.model.Card;
+import com.stripe.android.model.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+
+import javax.net.ssl.HttpsURLConnection;
+
+
+public class PaymentProcessingActivity extends ActionBarActivity {
+
+    private static final String TAG = "PaymentProcessingAct";
+    public static final String PUBLISHABLE_KEY = "pk_live_fiOkJl1d69aZ9AwfzCEFFALT";
+
+    private CreditCard creditCard;
+
+    private ArrayAdapter<String> statesArrayAdapter;
+    private ArrayAdapter<String> provincesArrayAdapter;
+
+    HashMap<String, String> countryCodeMapping;
+
+    private CountryType countryType;
+    private CountryType countryTypeShipping;
+
+    private String uuid_current;
+    ProgressDialog progress;
+
+    // some default for our current product
+    ElgamiProduct currentProduct = new Shirt();
+    private ProgressDialogFragment progressFragment;
+    private enum CountryType {
+        CA,
+        US,
+        OTHER
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_payment_processing);
+
+        ((GlobalApplication) getApplication()).getTracker(GlobalApplication.TrackerName.APP_TRACKER);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setHomeButtonEnabled(false);
+        // Put the home button as an icon, without being an 'up' button and without title text
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.actionbar_title_r);
+
+        progress = new ProgressDialog(this);
+
+        final CreditCardForm form = new CreditCardForm(this);
+
+//        ((LinearLayout) findViewById(R.id.layer)).addView(form);
+        progressFragment = ProgressDialogFragment.newInstance(R.string.progressMessage);
+        ((Button) findViewById(R.id.buttonAuthorize)).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                Card card = new Card(
+                        ((EditText)(findViewById(R.id.number))).getText().toString(),
+                        Integer.parseInt(((Spinner)findViewById(R.id.expMonth)).getSelectedItem().toString()),
+                        Integer.parseInt(((Spinner)findViewById(R.id.expYear)).getSelectedItem().toString()),
+                        ((EditText)findViewById(R.id.cvc)).getText().toString());
+                card.setCurrency("usd");
+                boolean validation = card.validateCard();
+                if (validation) {
+                    startProgress();
+                    new Stripe().createToken(
+                            card,
+                            PUBLISHABLE_KEY,
+                            new TokenCallback() {
+                                public void onSuccess(Token token) {
+                                    finishProgress();
+                                    doPayment(token);
+                                    Log.d("Token",token.getId());
+                                }
+                                public void onError(Exception error) {
+                                    handleError(error.getLocalizedMessage());
+                                    finishProgress();
+                                }
+                            });
+                } else if (!card.validateNumber()) {
+                    handleError("The card number that you entered is invalid");
+                } else if (!card.validateExpiryDate()) {
+                    handleError("The expiration date that you entered is invalid");
+                } else if (!card.validateCVC()) {
+                    handleError("The CVC code that you entered is invalid");
+                } else {
+                    handleError("The card details that you entered are invalid");
+                }
+//                if(form.isCreditCardValid())
+//                {
+////                    creditCard = form.getCreditCard();
+////                    payment();
+//                    //Pass credit card to service
+//                }
+//                else
+//                {
+//                    //Alert Credit card invalid
+//                }
+            }
+        });
+
+        List<String> countries = CreateCountriesArray();
+
+        ArrayAdapter<String> countriesArrayAdapter = new ArrayAdapter<String>(this, R.layout.elgami_spinner_item, countries);
+        countriesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
+
+        statesArrayAdapter = new ArrayAdapter<String>(this, R.layout.elgami_spinner_item, getResources().getStringArray(R.array.us_states));
+        statesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
+
+        provincesArrayAdapter = new ArrayAdapter<String>(this, R.layout.elgami_spinner_item, getResources().getStringArray(R.array.ca_provinces));
+        provincesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
+
+        SetupBillingCountrySpinner(countriesArrayAdapter);
+        SetupShippingCountrySpinner(countriesArrayAdapter);
+
+        currentProduct = ElgamiProductFactory.createProduct(getIntentMessageProductType());
+
+        int quantity = getIntentMessageProductQuantity();
+//        int cost = Integer.parseInt(currentProduct.getCost());
+        double cost = Double.parseDouble(getIntentMessageProductCost());
+
+        ((TextView) findViewById(R.id.productTitle)).setText(currentProduct.getName());
+        ((TextView)findViewById(R.id.productCost)).setText("USD $" + cost * quantity);
+    }
+
+    private void startProgress() {
+        progressFragment.show(getSupportFragmentManager(), "progress");
+    }
+    private void finishProgress() {
+        progressFragment.dismiss();
+    }
+
+    private void handleError(String error) {
+        DialogFragment fragment = ErrorDialogFragment.newInstance(R.string.validationErrors, error);
+        fragment.show(getSupportFragmentManager(), "error");
+    }
+    private void doPayment(Token token){
+        ElgamiProduct currentProduct = ElgamiProductFactory.createProduct(getIntentMessageProductType());
+        try {
+            HashMap<String, Object> params = new HashMap<String, Object>();
+            int quantity = getIntentMessageProductQuantity();
+            double cost = Double.parseDouble(getIntentMessageProductCost());
+            double total = cost * quantity;
+            JSONObject billing = BuildBillingJSON();
+            String shipping = BuildShippingJSON(billing).toString();
+            ParseUser user = ParseHelper.GetUserInformation(getIntentMessageDesignedBy()).getUserObject();
+
+            params.put("price",total);
+            params.put("paymentType","CC");
+            params.put("cardToken", token.getId());
+            params.put("amountPaid",Double.parseDouble(getIntentMessageProductCost()) * getIntentMessageProductQuantity());
+            params.put("shippingAddress",shipping);
+            params.put("productType",currentProduct.getName());
+            if (getIntentMessageProductSize() < 0)
+                params.put("productSize",(currentProduct.getSizes()[0]).toString());
+            else
+                params.put("productSize",(currentProduct.getSizes()[getIntentMessageProductSize()]).toString());
+
+            if (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
+                params.put("purchasedBy",ParseUser.getCurrentUser().getObjectId());
+            } else if (ParseUser.getCurrentUser() !=  null) {
+                params.put("purchasedBy",ParseUser.getCurrentUser().getObjectId());
+            } else {
+                params.put("purchasedBy","Anonymous");
+            }
+
+            if (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
+                params.put("purchasedBy", ParseUser.getCurrentUser().getObjectId());
+            } else {
+                params.put("designedBy", user.getObjectId());
+            }
+//            params.put("marketDesign","");
+            params.put("quantity",getIntentMessageProductQuantity());
+            progressFragment = ProgressDialogFragment.newInstance(R.string.charging);
+            startProgress();
+            ParseCloud.callFunctionInBackground("callStripe", params, new FunctionCallback<Object>() {
+                public void done(Object response, ParseException e) {
+                    finishProgress();
+                    if (e == null) {
+                        Log.d("Cloud Response", "There were no exceptions! " + response.toString());
+                        Toast.makeText(getApplicationContext(),
+                                "Item Purchased Successfully ",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        Log.d("Cloud Response", "Exception: " + e);
+                        Toast.makeText(getApplicationContext(),
+                                e.getMessage().toString(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+    private MainActivity.ProductType getIntentMessageProductType() {
+
+        int message = getIntent().getIntExtra(MainActivity.PRODUCT_TYPE_MESSAGE, 0);
+
+        if(message >= MainActivity.ProductType.values().length || message < 0) {
+            return MainActivity.ProductType.SHIRT;
+        }
+
+        return MainActivity.ProductType.values()[message];
+    }
+
+    private int getIntentMessageProductSize() {
+        return getIntent().getIntExtra(MainActivity.PRODUCT_SIZE_MESSAGE, 0);
+    }
+
+    private String getIntentMessageDesignedBy() {
+        return getIntent().getStringExtra(MainActivity.PRODUCT_DESIGNED_BY);
+    }
+
+    private String getIntentMessageProductCost() {
+        return getIntent().getStringExtra(MainActivity.PRODUCT_COST);
+    }
+
+    private int getIntentMessageProductQuantity() {
+        return getIntent().getIntExtra(MainActivity.PRODUCT_QUANTITY_MESSAGE, 0) + 1;
+    }
+
+    private String getIntentMessageUUID() {
+        return getIntent().getStringExtra(MainActivity.UUID_MESSAGE);
+    }
+
+    public void payment() {
+        progress.setMessage(getResources().getString(R.string.uploading_design));
+        progress.setCancelable(false);
+        progress.setCanceledOnTouchOutside(false);
+        progress.show();
+
+        new PaymentTask().execute();
+    }
+
+    private class PaymentTask extends AsyncTask<Void, Integer, Boolean> {
+
+        private String mShipping;
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            // MainActivity.TemplateType templateType = getIntentMessageTemplateType();
+            uuid_current = getIntentMessageUUID();
+
+            // need to add a field for the actual product type
+
+            try {
+//                String merchantId = "300210249"; // test
+                String merchantId = "343850000";
+//                String apiPasscode = "E0f5B26B0C344b1E9297E7B52Ff7be22"; // test
+                String apiPasscode = "66C4556466Fe440Da37A3415e07Ec675";
+
+                String auth = Base64.encodeToString((merchantId + ":" + apiPasscode).getBytes(), Base64.DEFAULT);
+
+                JSONObject jsonPayment = new JSONObject();
+
+                jsonPayment.put("merchant_id", merchantId);
+                jsonPayment.put("order_number", uuid_current);
+
+                int quantity = getIntentMessageProductQuantity();
+//                int cost = Integer.parseInt(currentProduct.getCost());
+                double cost = Double.parseDouble(getIntentMessageProductCost());
+                double total = cost * quantity;
+
+                jsonPayment.put("amount", total);
+                //jsonPayment.put("amount", 0.1);
+                jsonPayment.put("payment_method", "card");
+
+                JSONObject card = BuildCardJSON();
+                JSONObject billing = BuildBillingJSON();
+                JSONObject shipping = BuildShippingJSON(billing);
+                JSONObject custom = BuildCustomJSON();
+
+                // put the message parts together
+                jsonPayment.put("card", card);
+                jsonPayment.put("billing", billing);
+                jsonPayment.put("shipping", shipping);
+                jsonPayment.put("custom", custom);
+
+                Log.d("Payment", jsonPayment.toString());
+
+                mShipping = shipping.toString();
+
+                return MakePayment(jsonPayment, auth);
+
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {}
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+            if(result) {
+                updateOrder(mShipping);
+                new UploadFilesTask().execute(uuid_current);
+            }
+            else {
+                progress.dismiss(); // dismiss the loading dialog
+                setResult(Activity.RESULT_CANCELED); // set result to cancelled and finish this activity.
+            }
+            // payment complete
+        }
+    }
+
+    private void updateOrder(String shipping) {
+        /* Create an order in our fulfillment database */
+        ParseObject order = new ParseObject(ParseConstants.CLASS_ORDERS);
+        ElgamiProduct currentProduct = ElgamiProductFactory.createProduct(getIntentMessageProductType());
+
+        order.put(ParseConstants.KEY_PRODUCT_TYPE, currentProduct.getName());
+        order.put(ParseConstants.KEY_PRODUCT_SIZE, currentProduct.getSizes()[getIntentMessageProductSize()]);
+
+        if (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
+            order.put(ParseConstants.KEY_PURCHASED_BY, ParseUser.getCurrentUser());
+        } else if (ParseUser.getCurrentUser() !=  null) {
+            order.put(ParseConstants.KEY_PURCHASED_BY, ParseUser.getCurrentUser());
+        } else {
+            order.put(ParseConstants.KEY_PURCHASED_BY, "Anonymous");
+        }
+
+        if (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
+            order.put(ParseConstants.KEY_PURCHASED_BY, ParseUser.getCurrentUser());
+        } else {
+            try {
+                ParseUser user = ParseHelper.GetUserInformation(getIntentMessageDesignedBy()).getUserObject();
+                order.put(ParseConstants.KEY_DESIGNED_BY, user);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        order.put(ParseConstants.KEY_SHIPPING_ADDRESS, shipping);
+        order.put(ParseConstants.KEY_STATUS, ParseConstants.TYPE_PLACED);
+        order.put(ParseConstants.KEY_QUANTITY_ORDERED, getIntentMessageProductQuantity());
+        order.put(ParseConstants.KEY_AMOUNT_PAID, Double.parseDouble(getIntentMessageProductCost()) * getIntentMessageProductQuantity());
+        order.put(String.valueOf(ParseConstants.KEY_PAYMENT_TYPE), "CC");
+
+        order.saveInBackground(e -> {
+            if (e != null) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private JSONObject BuildCardJSON() throws JSONException {
+        JSONObject card = new JSONObject();
+
+        card.put("name", ((EditText)findViewById(R.id.billingNameText)).getText());
+        card.put("number", creditCard.getCardNumber());
+        card.put("expiry_month", creditCard.getExtMonth());
+        card.put("expiry_year", creditCard.getExpYear());
+        card.put("cvd", creditCard.getSecurityCode());
+
+        return card;
+    }
+
+    private JSONObject BuildBillingJSON() throws JSONException {
+
+        JSONObject billing = new JSONObject();
+
+        billing.put("name", ((EditText)findViewById(R.id.billingNameText)).getText());
+        billing.put("address_line1", ((EditText)findViewById(R.id.billingAddressText)).getText());
+        billing.put("city", ((EditText)findViewById(R.id.billingCityText)).getText());
+
+        switch(countryType) {
+            case CA:
+                billing.put("province", getResources().getStringArray(R.array.ca_provinces)[((Spinner)findViewById(R.id.billingStateSpinner)).getSelectedItemPosition()]);
+                break;
+            case US:
+                billing.put("province", getResources().getStringArray(R.array.us_states)[((Spinner)findViewById(R.id.billingStateSpinner)).getSelectedItemPosition()]);
+                break;
+            case OTHER:
+                String province = ((EditText)findViewById(R.id.billingStateText)).getText().toString();
+
+                // if the province isn't 2 characters, just put '--' so the payment goes through with beanstream
+                if(province.length() != 2) { billing.put("province", "--"); }
+                else {
+                    billing.put("province", province);
+                }
+
+                break;
+        }
+
+        billing.put("country", countryCodeMapping.get(((Spinner) findViewById(R.id.billingCountrySpinner)).getSelectedItem().toString()));
+        billing.put("postal_code", ((EditText)findViewById(R.id.billingPostalText)).getText());
+        //billing.put("email_address", ((EditText)findViewById(R.id.billingEmailText)).getText());
+
+        return billing;
+    }
+
+    private JSONObject BuildShippingJSON(JSONObject billing) throws JSONException {
+
+        JSONObject shipping = new JSONObject();
+
+        if(((CheckBox)findViewById(R.id.sameAsBillingCheckbox)).isChecked()) {
+            shipping.put("name", billing.get("name"));
+            shipping.put("address_line1", billing.get("address_line1"));
+            shipping.put("address_city", billing.get("city"));
+            shipping.put("address_province", ((EditText)findViewById(R.id.billingStateText)).getText());
+            shipping.put("address_country", billing.get("country"));
+            shipping.put("address_postal_code", billing.get("postal_code"));
+        }
+        else {
+            shipping.put("name", ((EditText) findViewById(R.id.shippingNameText)).getText());
+            shipping.put("address_line1", ((EditText) findViewById(R.id.shippingAddressText)).getText());
+            shipping.put("address_city", ((EditText) findViewById(R.id.shippingCityText)).getText());
+
+            switch(countryTypeShipping) {
+                case CA:
+                    shipping.put("address_province", getResources().getStringArray(R.array.ca_provinces)[((Spinner)findViewById(R.id.shippingStateSpinner)).getSelectedItemPosition()]);
+                    break;
+                case US:
+                    shipping.put("address_province", getResources().getStringArray(R.array.us_states)[((Spinner)findViewById(R.id.shippingStateSpinner)).getSelectedItemPosition()]);
+                    break;
+                case OTHER:
+                    shipping.put("address_province", ((EditText)findViewById(R.id.shippingStateText)).getText());
+                    break;
+            }
+
+            shipping.put("address_country", countryCodeMapping.get(((Spinner) findViewById(R.id.shippingCountrySpinner)).getSelectedItem().toString()));
+
+            //shipping.put("address_province", ((EditText) findViewById(R.id.shippingState)).getText());
+            //shipping.put("address_country", ((EditText) findViewById(R.id.shippingCountry)).getText());
+            shipping.put("address_postal_code", ((EditText) findViewById(R.id.shippingPostalText)).getText());
+        }
+
+        // put the email_address from billing into the shipping section so it doesn't complain
+//        shipping.put("email_address", ((EditText)findViewById(R.id.billingEmailText)).getText());
+
+        return shipping;
+    }
+
+
+    private JSONObject BuildCustomJSON() throws JSONException {
+        JSONObject custom = new JSONObject();
+
+        //MainActivity.TemplateType templateType = getIntentMessageTemplateType();
+        int productSize = getIntentMessageProductSize();
+
+        String[] sizes = currentProduct.getSizes();
+        String size = "";
+
+        // get the size text from the sizes array using the product size index
+        if(productSize >= sizes.length || productSize < 0) {
+            Log.d(TAG, "Invalid productSize " + productSize + " for product" + currentProduct.getName());
+            size = "INVALID";
+        }
+        else {
+            size = currentProduct.getSizes()[productSize];
+        }
+
+        custom.put("ref1", currentProduct.getName());
+        custom.put("ref2", size);
+
+        return custom;
+    }
+
+    DataOutputStream stream;
+
+    private boolean MakePayment(JSONObject jsonPayment, String auth) throws IOException {
+
+        URL url = new URL("https://www.beanstream.com/api/v1/payments");
+
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Authorization", "Passcode " + auth);
+
+        stream = new DataOutputStream(connection.getOutputStream());
+
+        try {
+            stream.writeBytes(jsonPayment.toString());
+            stream.flush();
+        }
+        catch(Exception e) {
+            stream.close();
+        }
+
+        if (connection.getResponseCode() == 200) {
+            Log.d("Payment", "Payment Successful!");
+            return true;
+        }
+        else {
+            Log.d("Payment", "Result: "+connection.getResponseCode() +" Message: "+ connection.getResponseMessage() );
+            return false;
+        }
+    }
+
+    private List<String> CreateCountriesArray() {
+        List<String> countries = new ArrayList<String>();
+        List<String> countryCodes = Arrays.asList(getResources().getStringArray(R.array.country_codes));
+        countryCodeMapping = new HashMap<String, String>();
+
+        for(int i = 0; i < countryCodes.size(); i++) {
+            countries.add(new Locale("", countryCodes.get(i)).getDisplayCountry());
+            countryCodeMapping.put(countries.get(i), countryCodes.get(i)); // map the country name to its code
+        }
+
+        // sort the country list by name
+        Collections.sort(countries);
+
+        countries.remove("Canada");
+        countries.remove("United States");
+
+        countries.add(0, "United States");
+        countries.add(0, "Canada");
+
+        return countries;
+    }
+
+    private void SetupBillingCountrySpinner(ArrayAdapter<String> countriesArrayAdapter) {
+        Spinner billingCountrySpinner = ((Spinner)findViewById(R.id.billingCountrySpinner));
+        billingCountrySpinner.setAdapter(countriesArrayAdapter);
+        billingCountrySpinner.setSelection(0); // Canada
+
+        billingCountrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                String selectedCountry = ((Spinner)findViewById(R.id.billingCountrySpinner)).getItemAtPosition(position).toString();
+
+                if(countryCodeMapping.get(selectedCountry).equals("CA")) {
+                    countryType = CountryType.CA;
+
+                    ((Spinner)findViewById(R.id.billingStateSpinner)).setAdapter(provincesArrayAdapter);
+
+                    findViewById(R.id.billingStateSpinner).setVisibility(View.VISIBLE);
+                    findViewById(R.id.billingStateText).setVisibility(View.GONE);
+                }
+                else if (countryCodeMapping.get(selectedCountry).equals("US")) {
+                    countryType = CountryType.US;
+
+                    ((Spinner)findViewById(R.id.billingStateSpinner)).setAdapter(statesArrayAdapter);
+
+                    findViewById(R.id.billingStateSpinner).setVisibility(View.VISIBLE);
+                    findViewById(R.id.billingStateText).setVisibility(View.GONE);
+                }
+                else {
+                    countryType = CountryType.OTHER;
+
+                    findViewById(R.id.billingStateSpinner).setVisibility(View.GONE);
+                    findViewById(R.id.billingStateText).setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
+    }
+
+    private void SetupShippingCountrySpinner(ArrayAdapter<String> countriesArrayAdapter) {
+
+        Spinner shippingCountrySpinner = ((Spinner)findViewById(R.id.shippingCountrySpinner));
+        shippingCountrySpinner.setAdapter(countriesArrayAdapter);
+        shippingCountrySpinner.setSelection(0); // Canada
+
+        shippingCountrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                String selectedCountry = ((Spinner)findViewById(R.id.shippingCountrySpinner)).getItemAtPosition(position).toString();
+
+                if(countryCodeMapping.get(selectedCountry).equals("CA")) {
+                    countryTypeShipping = CountryType.CA;
+
+                    ((Spinner)findViewById(R.id.shippingStateSpinner)).setAdapter(provincesArrayAdapter);
+
+                    findViewById(R.id.shippingStateSpinner).setVisibility(View.VISIBLE);
+                    findViewById(R.id.shippingStateText).setVisibility(View.GONE);
+                }
+                else if (countryCodeMapping.get(selectedCountry).equals("US")) {
+                    countryTypeShipping = CountryType.US;
+
+                    ((Spinner)findViewById(R.id.shippingStateSpinner)).setAdapter(statesArrayAdapter);
+
+                    findViewById(R.id.shippingStateSpinner).setVisibility(View.VISIBLE);
+                    findViewById(R.id.shippingStateText).setVisibility(View.GONE);
+                }
+                else {
+                    countryTypeShipping = CountryType.OTHER;
+
+                    findViewById(R.id.shippingStateSpinner).setVisibility(View.GONE);
+                    findViewById(R.id.shippingStateText).setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
+    }
+
+    public void onCheckboxClicked(View checkboxView) {
+        // Is the view now checked?
+        boolean checked = ((CheckBox) checkboxView).isChecked();
+
+        // Check which checkbox was clicked
+        switch(checkboxView.getId()) {
+            case R.id.sameAsBillingCheckbox:
+                if (checked) {
+                    findViewById(R.id.shippingInformation).setVisibility(View.GONE);
+                }
+                else {
+                    findViewById(R.id.shippingInformation).setVisibility(View.VISIBLE);
+                }
+        }
+    }
+
+    private class UploadFilesTask extends AsyncTask<String, Integer, Boolean> {
+
+        protected Boolean doInBackground(String... uuids) {
+
+            String fileName = uuids[0] + ".png";
+            String fileNameTemplateOne = uuids[0] + "-t1" + ".png";
+            String fileNameTemplateTwo = uuids[0] + "-t2" + ".png";
+
+            boolean result;
+
+            try {
+                result = S3Helper.UploadSavedFile(getFilesDir() + "/" + fileName, fileName, true);
+                result &= S3Helper.UploadSavedFile(getFilesDir() + "/" + fileNameTemplateOne, fileNameTemplateOne, true);
+                result &= S3Helper.UploadSavedFile(getFilesDir() + "/" + fileNameTemplateTwo, fileNameTemplateTwo, true);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return result;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            // setProgressPercent(progress[0]);
+        }
+
+        protected void onPostExecute(Boolean result) {
+
+            progress.dismiss();
+
+            // set result to okay, but don't finish activity; we can display the confirmation here
+            setResult(Activity.RESULT_OK);
+
+            // Toast.makeText(getApplicationContext(), result ? "Upload Success" : "Upload Failure", Toast.LENGTH_SHORT).show();
+            TextView textView = (TextView)findViewById(R.id.textView1);
+
+            View scrollView = findViewById(R.id.scrollView);
+            scrollView.setVisibility(View.GONE);
+
+            if(result) {
+                textView.setText(R.string.payment_successful);
+            }
+            else {
+                textView.setText(R.string.payment_design_failed);
+            }
+            //textView1.setVisibility(View.VISIBLE);
+        }
+    }
+}

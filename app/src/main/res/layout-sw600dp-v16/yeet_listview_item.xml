@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:weightSum="1">
+
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="top|center_horizontal">
+
+            <ImageView
+                android:id="@+id/profilePicture"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:clickable="true"
+                android:contentDescription="@string/content_desc_profile_picture"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/null_content_desc"
+                android:src="@drawable/frame" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingEnd="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="3dp">
+
+            <TableLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TableRow>
+
+                    <TextView
+                        android:id="@+id/fullName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/stroke"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="fullName" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginStart="3dp"
+                        android:fontFamily="sans-serif-light"
+                        android:text="@string/_at"
+                        android:textColor="@color/grey"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:textColor="@color/grey"
+                        android:textSize="14sp"
+                        tools:text="username" />
+
+                </TableRow>
+
+            </TableLayout>
+
+            <TableLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TableRow>
+
+                    <TextView
+                        android:id="@+id/messageText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoLink="web"
+                        android:paddingEnd="5dp"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="5dp"
+                        android:paddingStart="0dp"
+                        android:textColor="@color/stroke"
+                        android:textSize="16sp"
+                        tools:text="This is the body text of the yeet." />
+
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:id="@+id/time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp"
+                        tools:text="time" />
+
+                </TableRow>
+
+            </TableLayout>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/messageImageLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal|center_vertical">
+
+                <com.yeetclub.android.ResizeableImageView
+                    android:id="@+id/messageImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="10dp"
+                    android:adjustViewBounds="true"
+                    android:fontFamily="sans-serif-light"
+                    android:src="@drawable/test"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/replyImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:contentDescription="@string/reep"
+                    android:src="@drawable/ic_action_reply_feed" />
+
+                <TextView
+                    android:id="@+id/replyCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical|center|center_horizontal"
+                    android:text="@string/_0"
+                    android:textColor="@color/grey"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/likeImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="25dp"
+                    android:contentDescription="@string/content_desc_like"
+                    android:src="@drawable/ic_action_like_feed" />
+
+                <TextView
+                    android:id="@+id/likeCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical|center|center_horizontal"
+                    android:text="@string/_0"
+                    android:textColor="@color/grey"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/premiumContent"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:contentDescription="@string/premium_content"
+                    android:foregroundGravity="center_vertical|center|center_horizontal"
+                    android:gravity="center_vertical|center|center_horizontal"
+                    android:src="@drawable/ic_premium_content"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/premiumContentText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_toEndOf="@+id/premiumContent"
+                    android:layout_toRightOf="@+id/premiumContent"
+                    android:gravity="start"
+                    android:text="@string/premium_content_desc"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/moreComments"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clickable="false"
+            android:contentDescription="@string/see_more_comments"
+            android:src="@drawable/ic_action_feed_flip_right" />
+
+    </LinearLayout>
+
+</LinearLayout>

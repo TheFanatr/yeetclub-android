@@ -1,0 +1,62 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="top"
+    android:orientation="vertical"
+    android:background="#ffffff">
+
+    <EditText
+        android:id="@+id/signup_group_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textNoSuggestions"
+        style="@style/ParseLoginUI.EditText"
+        android:hint="@string/com_parse_ui_group_input_hint" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:counterEnabled="true"
+        app:counterMaxLength="15">
+
+        <EditText
+            android:id="@+id/signup_username_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textNoSuggestions"
+            style="@style/ParseLoginUI.EditText"
+            android:hint="@string/com_parse_ui_username_input_hint"
+            android:maxLength ="15" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <EditText
+        android:id="@+id/signup_password_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/ParseLoginUI.EditText"
+        android:layout_marginTop="@dimen/com_parse_ui_small_vertical_spacing"
+        android:hint="@string/com_parse_ui_password_input_hint"
+        android:inputType="textPassword"
+        android:selectAllOnFocus="true"/>
+
+    <EditText
+        android:id="@+id/signup_confirm_password_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/ParseLoginUI.EditText"
+        android:layout_marginTop="@dimen/com_parse_ui_small_vertical_spacing"
+        android:hint="@string/com_parse_ui_confirm_password_input_hint"
+        android:inputType="textPassword"
+        android:selectAllOnFocus="true" />
+
+    <Button
+        android:id="@+id/create_account"
+        style="@style/ParseLoginUI.Button"
+        android:layout_marginTop="@dimen/com_parse_ui_small_vertical_spacing"
+        android:text="@string/com_parse_ui_create_account_button_label" />
+
+</LinearLayout>

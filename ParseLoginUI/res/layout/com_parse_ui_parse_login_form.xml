@@ -1,0 +1,54 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/parse_login"
+    android:visibility="gone"
+    android:background="#ffffff">
+
+    <EditText
+        android:id="@+id/login_username_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textNoSuggestions"
+        style="@style/ParseLoginUI.EditText"
+        android:hint="@string/com_parse_ui_username_input_hint"
+        android:fontFamily="sans-serif-light" >
+        </EditText>
+
+    <EditText
+        android:id="@+id/login_password_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/ParseLoginUI.EditText"
+        android:layout_marginTop="@dimen/com_parse_ui_small_vertical_spacing"
+        android:fontFamily="sans-serif-light"
+        android:hint="@string/com_parse_ui_password_input_hint"
+        android:inputType="textPassword"
+        android:selectAllOnFocus="true" />
+
+    <LinearLayout
+        android:id="@+id/parse_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/com_parse_ui_large_vertical_spacing">
+
+        <Button
+            android:id="@+id/parse_login_button"
+            style="@style/ParseLoginUI.Button"
+            android:layout_weight="1"
+            android:layout_marginBottom="15dp"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/com_parse_ui_parse_login_button_label"
+            android:layout_width="0dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/parse_signup_button"
+        style="@style/ParseLoginUI.Button"
+        android:fontFamily="sans-serif-light"
+        android:layout_weight="1"
+        android:text="@string/com_parse_ui_parse_signup_button_label" />
+
+</LinearLayout>

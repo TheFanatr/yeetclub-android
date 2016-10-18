@@ -1,0 +1,103 @@
+plugins {
+    id "me.tatarka.retrolambda" version "3.2.5"
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion '23.0.3'
+
+    dexOptions {
+        javaMaxHeapSize "6g"
+    }
+
+    defaultConfig {
+        applicationId "com.yeetclub.android"
+        minSdkVersion 15
+        targetSdkVersion 24
+
+        multiDexEnabled true // Enabling multidex support.
+        renderscriptTargetApi 23
+        renderscriptSupportModeEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            //runProguard false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    // Subsampling Scale ImageView
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
+
+    // RecyclerView Headers
+    compile 'com.bartoszlipinski:recyclerviewheader2:2.0.1'
+
+    // Animators
+    compile 'jp.wasabeef:recyclerview-animators:2.2.3'
+    compile "com.mikepenz:itemanimators:0.5.0@aar"
+
+    // NeuMob
+    compile 'com.neumob:neumob-android:2.3.7'
+
+    // Material Design Navigation Drawer
+    compile('com.mikepenz:materialdrawer:5.3.6@aar') {
+        transitive = true
+    }
+    // Material Design Font Icons
+    compile 'com.mikepenz:iconics-core:2.7.1@aar'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.mikepenz:google-material-typeface:2.2.0.2.original@aar'
+    compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
+    compile 'com.mikepenz:fontawesome-typeface:4.6.0.2@aar'
+
+    // RecyclerView Header
+    compile 'com.bartoszlipinski:recyclerviewheader2:2.0.1'
+
+    // RecyclerView
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+
+    // Material Design
+    compile 'com.android.support:design:24.2.1'
+
+    // Google Analytics
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+
+    // Module dependency on ParseLoginUI library sources
+    compile project(':ParseLoginUI')
+
+    // Parse
+    compile 'com.parse:parse-android:1.13.0'
+    compile 'com.parse:parsetwitterutils-android:1.10.5'
+    compile 'com.parse:parsefacebookutils-v4-android:1.10.4@aar'
+
+    // Excluding bolts-android because parse-android uses bolts-tasks which conflicts
+    // hint: use 'gradlew app:dependencies' to inspect
+    compile('com.facebook.android:facebook-android-sdk:4.14.0') {
+        exclude module: 'bolts-android'
+        exclude module: 'bolts-tasks'
+    }
+
+    // Butterknife
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
+    // Picasso
+    compile files('libs/picasso-2.5.2.jar')
+}

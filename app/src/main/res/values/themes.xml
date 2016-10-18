@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- colorPrimary is used for the default action bar background -->
+        <item name="colorPrimary">@color/white</item>
+
+        <!-- colorPrimaryDark is used for the status bar -->
+        <item name="colorPrimaryDark">#000</item>
+
+        <!-- colorAccent is used as the default value for colorControlActivated
+             which is used to tint widgets -->
+        <item name="colorAccent">@color/elgamiteal</item>
+
+        <!-- You can also set colorControlNormal, colorControlActivated
+             colorControlHighlight & colorSwitchThumbNormal. -->
+
+        <item name="android:textColorSecondary">#d7d7d7</item>
+
+        <item name="textColorError">#ef9a9a</item>
+
+    </style>
+
+    <style name="PreferenceScreen">
+        <item name="android:background">#ffffff</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:textColorPrimary">@color/elgamiteal</item>
+        <item name="android:textColorSecondary">@color/elgamiteal</item>
+        <item name="android:textColorTertiary">@color/elgamiteal</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/elgamiteal</item>
+    </style>
+
+</resources>

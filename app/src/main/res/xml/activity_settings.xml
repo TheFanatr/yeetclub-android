@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <PreferenceCategory android:layout="@layout/preferences_category" android:title="Account Settings">
+        <Preference
+            android:title="Delete All Yeets"
+            android:summary=""
+            android:key="deleteAll">
+        </Preference>
+
+        <Preference
+            android:title="Share Yecret Key"
+            android:summary=""
+            android:key="shareKey">
+        </Preference>
+
+        <Preference
+            android:title="Edit Profile"
+            android:summary=""
+            android:key="editProfile">
+
+        </Preference>
+        <Preference
+            android:title="Change Password"
+            android:summary=""
+            android:key="changePassword">
+
+        </Preference>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:layout="@layout/preferences_category" android:title="Support"
+        >
+        <Preference
+            android:title="Get the Latest Update"
+            android:summary=""
+            android:key="update">
+        </Preference>
+        <Preference
+            android:title="Send Feedback to Yalib"
+            android:summary=""
+            android:key="">
+
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="mailto:info@hypercycle.co"
+                />
+
+        </Preference>
+        <Preference
+            android:title="Report a Problem to Yalib"
+            android:summary=""
+            android:key="">
+
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="mailto:info@hypercycle.co"
+                />
+
+        </Preference>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:layout="@layout/preferences_category" android:title="Sound Settings">
+        <Preference
+            android:title="Turn Off Sounds"
+            android:summary=""
+            android:key="soundsOff">
+
+        </Preference>
+        <Preference
+            android:title="Turn On Sounds"
+            android:summary=""
+            android:key="soundsOn">
+
+        </Preference>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:layout="@layout/preferences_category" android:title="Notification Settings">
+        <Preference
+            android:title="Turn Off Push Notifications"
+            android:summary=""
+            android:key="notificationsOff">
+
+        </Preference>
+        <Preference
+            android:title="Turn On Push Notifications"
+            android:summary=""
+            android:key="notificationsOn">
+
+        </Preference>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:layout="@layout/preferences_category" android:title="About">
+        <Preference
+            android:title="Privacy Policy"
+            android:summary=""
+            android:key="privacyPolicy">
+        </Preference>
+        <Preference
+            android:title="Terms of Use"
+            android:summary=""
+            android:key="termsOfService"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:layout="@layout/preferences_category" android:title="Log Out">
+        <Preference
+            android:title="Log Out"
+            android:summary=""
+            android:key="logOut"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

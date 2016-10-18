@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="etsyblur-0.1.3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/com.ms-square/etsyblur/0.1.3/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/build/intermediates/exploded-aar/com.ms-square/etsyblur/0.1.3/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.ms-square/etsyblur/0.1.3/71be188882c04c6aacaad5cf6e0337c33b75fe13/etsyblur-0.1.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

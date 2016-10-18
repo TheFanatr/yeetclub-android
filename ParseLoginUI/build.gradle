@@ -1,0 +1,36 @@
+apply plugin: 'com.android.library'
+
+dependencies {
+    // material design
+    compile 'com.android.support:design:24.0.0'
+    provided 'com.facebook.android:facebook-android-sdk:4.9.0'
+    // This assumes that your app's project has a compile dependency on the Parse SDK JAR files.
+    // Your project's build.gradle should say:
+    //
+    //     compile files('YOUR_PROJECT_LIBS_PATH/Parse-1.9.1.jar')
+    //     compile files('YOUR_PROJECT_LIBS_PATH/ParseFacebookUtilsV4-1.9.1.jar')
+    //
+    // Since the dependency below is "provided" instead of "compile", your project's build.gradle
+    // does not have to refer to the same Parse SDK instance that's in the ParseLoginUI/libs folder.
+    provided 'com.parse:parse-android:1.13.0'
+    provided 'com.parse:parsetwitterutils-android:1.10.5'
+    provided 'com.parse:parsefacebookutils-v4-android:1.10.4@aar'
+}
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 24
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+        }
+    }
+}

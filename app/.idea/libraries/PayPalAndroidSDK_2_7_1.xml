@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="PayPalAndroidSDK-2.7.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/PayPalAndroidSDK-2.7.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

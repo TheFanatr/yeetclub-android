@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#fff</color>
+    <color name="burgundy">#b71c1c</color>
+    <color name="highlight">#169cee</color>
+    <color name="light_blue">#ebf6ff</color>
+    <color name="scrollgrey">#dddddd</color>
+    <color name="light_grey">#E0E0E0</color>
+    <color name="statusgrey">#222222</color>
+    <color name="red">#f44336</color>
+    <color name="placeholderblue">#c5eff7</color>
+	<color name="stroke">#000</color>
+    <color name="grey">#c3c3c3</color>
+    <color name="spinnerItem">#aaaaaa</color>
+    <color name="lightred">#FFEBEE</color>
+</resources>

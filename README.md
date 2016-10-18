@@ -49,7 +49,7 @@ Anyway, happy coding! If you're interested in contributing, please give us a sho
 ## 1.0 Team & Past Contributors
 
 * <a href="https://github.com/santafebound/">Martin Erlic</a>
-* Come join "us", because so far this team of me is not actually team of "we!" Shoot me an email at info@yeet.club or at submit a pull request.
+* Please, come join us, because so far this team of me is not actually team of "we!" Shoot me an email at info@yeet.club for more information or simply submit a pull request.
 
 <hr>
 

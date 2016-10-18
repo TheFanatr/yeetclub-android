@@ -1,7 +1,7 @@
 
 
-| ![alt tag](http://www.elgami.com/images/yc.png) | ![alt tag](http://www.elgami.com/images/yeet-club-banner.png) |
-|------|----------|
+![alt tag](http://www.elgami.com/images/yeet-club-banner.png)
+
 
 # Yeet Club - Exclusive Network
 Yeet Club is an open-source Android application for small, private groups of exclusive friends.

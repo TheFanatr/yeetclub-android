@@ -351,7 +351,6 @@ Given that Yeet is perhaps the single class that is of any significant importanc
 The following Third Party Libraries are used in Yeet Club:
 
 - **MaterialDrawer** by mikepenz: https://github.com/mikepenz/MaterialDrawer
-- **RecyclerViewHeader** by blipinsk: https://github.com/blipinsk/RecyclerViewHeader
 - **subsampling-scale-image-view** by davemorrissey: https://github.com/davemorrissey/subsampling-scale-image-view
 - **picasso** by square: https://github.com/square/picasso
 

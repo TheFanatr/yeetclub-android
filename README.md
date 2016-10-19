@@ -3,7 +3,7 @@
 ![alt tag](http://www.elgami.com/images/yeet-club-banner.png)
 
 
-# Yeet Club - Exclusive Network
+# Yeet Club - An Exclusive App for Everybody
 Yeet Club is an open-source Android application for small, private groups of exclusive friends. It works a lot like Twitter.
 
 # Table of Contents  

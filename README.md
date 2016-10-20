@@ -1,6 +1,6 @@
 
 
-![alt tag](http://www.elgami.com/images/yeet-club-banner.png)
+![alt tag](http://www.yeet.club/img/bg-cta.jpg)
 
 
 # Yeet Club - An Exclusive App for Everybody

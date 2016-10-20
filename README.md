@@ -1,6 +1,6 @@
 
 
-![alt tag](http://www.yeet.club/img/bg-cta.jpg)
+![alt tag](http://www.elgami.com/images/yeet-club-banner.png)
 
 
 # Yeet Club - An Exclusive App for Everybody
@@ -333,7 +333,7 @@ Please keep in mind that I built this in over a weekend (72 hours, as of 2016-09
 
 Consider contributing to the following classes: **1) Fragment1** (the feed), **2) FeedAdapter** (the recycler adapter for the feed), 3) **EndlessRecyclerOnScrollListener**, and 4) **LoadingRowRecyclerAdapter** (I have to yet to integrate these two classes into the feed). Loading a fixed number of items per full scroll would certainly reduce the load of our RecyclerView lists when the amount of data stored becomes larger.
 
-Cacheing data for offline viewing could be another area to work on. [See Take Your App Offline with Parse Local Datastore](http://blog.parse.com/announcements/take-your-app-offline-with-parse-local-datastore/)
+Cacheing data for offline viewing could be another area to work on. See [Take Your App Offline with Parse Local Datastore](http://blog.parse.com/announcements/take-your-app-offline-with-parse-local-datastore/) for some useful information.
 
 ### 5.0.2 Media
 

@@ -327,23 +327,15 @@ Parse.Cloud.define("pushRantStop", function (request, response) {
 <a name="needs"/>
 ## 5.0 Roadmap
 
-Please keep in mind that I built this in over a weekend (72 hours, as of 2016-09-30). There are tons and tons of code optimizations that could be made here, including pulling all Parse queries outside of Activities, using RetroFit and ReactiveX to increase the speed of data transfer in the feed, etc. For now, please refer to the Trello board: https://trello.com/b/uYy2BsuH/yeet-club to keep track of upcoming features. In the future, I will outline a more detailed roadmap, including contributors' suggestions, database schema improvements, and perhaps an overall vision for the future of Yeet Club software development, including algorithms, security features and other network considerations. As always, I encourage anybody who is interested to reach out at info@yeet.club if you have any questions, comments, or concerns. Cheers.
+~~Please keep in mind that I built this in over a weekend (72 hours, as of 2016-09-30).~~ There are tons and tons of code optimizations that could be made here, including pulling all Parse queries outside of Activities, using RetroFit and ReactiveX to increase the speed of data transfer in the feed, etc. For now, please refer to the Trello board: https://trello.com/b/uYy2BsuH/yeet-club to keep track of upcoming features. In the future, I will outline a more detailed roadmap, including contributors' suggestions, database schema improvements, etc. As always, I encourage anybody who is interested to reach out at info@yeet.club if you have any questions, comments, or concerns. Cheers.
 
 ### 5.0.1 The Feed
 
 Consider contributing to the following classes: **1) Fragment1** (the feed), **2) FeedAdapter** (the recycler adapter for the feed), 3) **EndlessRecyclerOnScrollListener**, and 4) **LoadingRowRecyclerAdapter** (I have to yet to integrate these two classes into the feed). Loading a fixed number of items per full scroll would certainly reduce the load of our RecyclerView lists when the amount of data stored becomes larger.
 
-Cacheing data for offline viewing could be another area to work on. See [Take Your App Offline with Parse Local Datastore](http://blog.parse.com/announcements/take-your-app-offline-with-parse-local-datastore/) for some useful information.
+~~Cacheing data for offline viewing could be another area to work on. See [Take Your App Offline with Parse Local Datastore](http://blog.parse.com/announcements/take-your-app-offline-with-parse-local-datastore/) for some useful information.~~ (Done, as of 2016-10-27).
 
-### 5.0.2 Media
-
-Displaying and loading images in the feed more efficiently is definitey an area to work on.
-
-### 5.0.3 The Data Model
-
-Given that Yeet is perhaps the single class that is of any significant importance to the app, I did not set up the data model in the typical way (see http://archive.oreilly.com/pub/a/onjava/2002/02/06/jdo1.html), so this part of the code could definitely be made more efficient.
-
-### 5.0.4 Notifications Stacking
+### 5.0.2 Notifications Stacking (Background Job)
 
 Currently, notifications come one at a time. If a user receives multiple notifications they are forced to manually clear each notification individually.
 

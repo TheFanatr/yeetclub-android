@@ -43,6 +43,7 @@ repositories {
 }
 
 dependencies {
+
     // Subsampling Scale ImageView
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
 

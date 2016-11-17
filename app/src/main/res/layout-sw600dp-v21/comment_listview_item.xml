@@ -146,7 +146,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
-
                 <ImageView
                     android:id="@+id/likeImage"
                     android:layout_width="32dp"

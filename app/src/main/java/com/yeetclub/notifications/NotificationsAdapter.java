@@ -31,6 +31,7 @@ import com.yeetclub.comment.CommentActivity;
 import com.yeetclub.comment.ReplyActivity;
 import com.yeetclub.parse.ParseConstants;
 import com.yeetclub.profile.UserProfileActivity;
+import com.yeetclub.utility.NetworkHelper;
 
 import java.util.Collections;
 import java.util.Date;
@@ -59,7 +60,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private void launchCommentFromNotification(ParseObject notifications) {
 
-        // We retrieve the permanent objectId of the tweet
+        // We retrieve the permanent objectId of the Yeet
         String userId = String.valueOf(notifications.getParseObject(ParseConstants.KEY_SENDER_AUTHOR_POINTER).getObjectId());
         String commentId = String.valueOf(notifications.getString(ParseConstants.KEY_COMMENT_OBJECT_ID));
 
@@ -87,8 +88,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     /**
-     *
-     * @param notifications A list derived from the main "tweet" ParseObject (Yeet), from which also user information may be obtained via the _User pointer "author".
+     * @param notifications A list derived from the main "Yeet" ParseObject (Yeet), from which also user information may be obtained via the _User pointer "author".
      */
     private void retrievePointerObjectId(ParseObject notifications) {
         // We want to retrieve the permanent user objectId from the author of the Yeet so that we can always launch the user's profile, even if the author changes their username in the future.
@@ -167,6 +167,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         // Asynchronously display the profile picture downloaded from parse
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, notifications.getParseObject(ParseConstants.KEY_SENDER_AUTHOR_POINTER).getObjectId());
+        query.fromLocalDatastore();
         query.findInBackground((user, e) -> {
             if (e == null) for (ParseObject userObject : user) {
 
@@ -191,7 +192,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                 if (!(userObject.getString(ParseConstants.KEY_AUTHOR_FULL_NAME).isEmpty())) {
                     holder.fullName.setText(userObject.getString(ParseConstants.KEY_AUTHOR_FULL_NAME));
                 } else {
-                    holder.fullName.setText("Anonymous Lose");
+                    holder.fullName.setText(R.string.anonymous_fullName);
                 }
 
             }
@@ -202,6 +203,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         // Asynchronously display the profile picture downloaded from parse
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, notifications.getParseObject(ParseConstants.KEY_SENDER_AUTHOR_POINTER).getObjectId());
+        query.fromLocalDatastore();
         query.findInBackground((user, e) -> {
             if (e == null) for (ParseObject userObject : user) {
 
@@ -226,7 +228,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                 if (!(userObject.getString(ParseConstants.KEY_AUTHOR_FULL_NAME).isEmpty())) {
                     holder.fullName.setText(userObject.getString(ParseConstants.KEY_AUTHOR_FULL_NAME));
                 } else {
-                    holder.fullName.setText("Anonymous Lose");
+                    holder.fullName.setText(R.string.anonymous_fullName);
                 }
 
                 holder.username.setText(userObject.getString(ParseConstants.KEY_USERNAME));
@@ -241,6 +243,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, notification.getString("commentObjectId"));
+        query.fromLocalDatastore();
         query.findInBackground((comment, e) -> {
             // Find the single Comment object associated with the current ListAdapter position
             if (e == null) for (ParseObject yeetObject : comment) {
@@ -254,7 +257,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                     // Add unique User objectId to likedBy array in Parse
                     yeetObject.addAllUnique("likedBy", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
-                    yeetObject.saveInBackground();
+                    yeetObject.saveEventually();
 
                     // Increment the likeCount in the Comment feed
                     incrementLikeCount(yeetObject, position);
@@ -318,7 +321,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             notification.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymous Lose");
+            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         notification.put(ParseConstants.KEY_NOTIFICATION_BODY, result);
@@ -354,7 +357,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         yeetObject.increment("likeCount");
         mNotifications.get(position).increment("likeCount");
         this.adapter.notifyDataSetChanged();
-        yeetObject.saveInBackground();
+        yeetObject.saveEventually();
     }
 
     private void configureViewHolder1(ViewHolder holder, int position) {
@@ -475,6 +478,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                 ParseQuery<ParseObject> imageQuery = new ParseQuery<>(ParseConstants.CLASS_YEET);
                 imageQuery.whereEqualTo(ParseConstants.KEY_OBJECT_ID, yeet.getObjectId());
+                imageQuery.fromLocalDatastore();
                 imageQuery.findInBackground((user, e2) -> {
                     if (e2 == null) for (ParseObject userObject : user) {
 
@@ -524,14 +528,14 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         });
 
         holder.itemView.setOnClickListener(v -> {
-            launchCommentFromNotification(yeet);
+            boolean isOnline = NetworkHelper.isOnline(mContext);
+            if (!isOnline) {
+                Toast.makeText(mContext, R.string.cannot_retrieve_messages, Toast.LENGTH_SHORT).show();
+            } else {
+                v.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.like_click));
+                launchCommentFromNotification(yeet);
+            }
         });
-
-        /*holder.itemView.setOnLongClickListener(v -> {
-            v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-            deleteComment(position);
-            return true;
-        });*/
     }
 
     private void retrievePointerObjectIdForReply(ParseObject yeets, int position) {
@@ -568,6 +572,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private void setLikeImageHolderResource(int position, ViewHolder2 holder) {
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, mNotifications.get(position).getObjectId());
+        query.fromLocalDatastore();
         query.findInBackground((comment, e) -> {
             // Find the single Comment object associated with the current ListAdapter position
             if (e == null) for (ParseObject yeetObject : comment) {
@@ -595,6 +600,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private void downloadMessageImage(ViewHolder2 holder, int position) {
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, mNotifications.get(position).getObjectId());
+        query.fromLocalDatastore();
         query.findInBackground((user, e) -> {
             if (e == null) for (ParseObject userObject : user) {
 

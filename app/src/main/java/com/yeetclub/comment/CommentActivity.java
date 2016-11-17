@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
+import com.yeetclub.android.DividerItemDecoration;
 import com.yeetclub.android.MediaPreviewActivity;
 import com.yeetclub.android.R;
 import com.yeetclub.feed.FeedAdapter;
@@ -54,6 +56,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.yeetclub.android.R.id.profilePicture;
+import static com.yeetclub.android.R.raw.yeet;
+
 /**
  * Created by @santafebound on 2015-11-07.
  */
@@ -62,7 +67,7 @@ public class CommentActivity extends AppCompatActivity {
     protected List<ParseObject> mYeets;
     protected SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private RecyclerView recyclerView;
+    private RecyclerView mRecyclerView;
     private FeedAdapter adapter;
 
     public CommentActivity() {
@@ -109,29 +114,26 @@ public class CommentActivity extends AppCompatActivity {
 
                 initialise(commentId, userId);
 
-                createTopLevelCommentObject(commentId, userId);
+                createTopLevelCommentObject(commentId, userId, isOnline);
 
-                // Pass the commentId as a parameter to a function that retrieves all the comments associated with the top-level tweet's objectId
+                // Pass the commentId as a parameter to a function that retrieves all the comments associated with the top-level Yeet's objectId
                 setSwipeRefreshLayout(isOnline, commentId, userId);
 
                 Button submitReply = (Button) findViewById(R.id.submitReply);
 
                 // Set typeface for Button and EditText
                 Typeface tf_bold = Typeface.createFromAsset(getAssets(), "fonts/Lato-Bold.ttf");
-                submitReply.setTypeface(tf_bold);
-
                 Typeface tf_reg = Typeface.createFromAsset(getAssets(), "fonts/Lato-Regular.ttf");
+                submitReply.setTypeface(tf_bold);
                 myEditText.setTypeface(tf_reg);
 
                 submitReply.setOnClickListener(view -> {
-
                     view.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.image_click));
                     sendReply(myEditText, commentId, userId);
-
                 });
 
                 ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
-                // Query the Yeet class with the objectId of the Comment that was sent with us here from the Intent bundle
+                // Query the Yeet class with the objectId of the Comment that was sent to this activity from the Intent bundle
                 query.whereContains(ParseConstants.KEY_OBJECT_ID, commentId);
                 query.findInBackground((topLevelComment, e) -> {
                     if (e == null) {
@@ -147,32 +149,32 @@ public class CommentActivity extends AppCompatActivity {
 
                             });
                         }
+                    } else {
+                        // If the top-level Comment object no longer exists then notify the user
+                        findViewById(R.id.noTopLevelCommentObject).setVisibility(View.VISIBLE);
+                        findViewById(R.id.yeetDeleted).setVisibility(View.VISIBLE);
                     }
+
                 });
             }
         }
-
-        findViewById(R.id.networkOfflineText).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-        findViewById(R.id.rl).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-
     }
 
     private boolean initialise(String commentId, String userId) {
 
         boolean isOnline = NetworkHelper.isOnline(this);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-        retrieveYeets(commentId, userId);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        retrieveYeets(commentId, userId, isOnline);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             if (!isOnline) {
                 mSwipeRefreshLayout.setRefreshing(false);
             } else {
-                retrieveYeets(commentId, userId);
-                createTopLevelCommentObject(commentId, userId);
+                retrieveYeets(commentId, userId, true);
+                createTopLevelCommentObject(commentId, userId, true);
             }
         });
         return isOnline;
@@ -188,7 +190,7 @@ public class CommentActivity extends AppCompatActivity {
         }
     }
 
-    private void createTopLevelCommentObject(String commentId, String userId) {
+    private void createTopLevelCommentObject(String commentId, String userId, boolean isOnline) {
 
         ImageView topLevelMessageImage = (ImageView) findViewById(R.id.topLevelMessageImage);
         TextView topLevelUsername = (TextView) findViewById(R.id.topLevelUsername);
@@ -200,8 +202,10 @@ public class CommentActivity extends AppCompatActivity {
         ImageView topLevelReplyImage = (ImageView) findViewById(R.id.replyImage);
         TextView topLevelReplyCount = (TextView) findViewById(R.id.replyCount);
         LinearLayout topLevelLinearLayout = (LinearLayout) findViewById(R.id.listView_item);
-        ImageView topLevelProfilePicture = (ImageView) findViewById(R.id.profilePicture);
-        LinearLayout topLevelMessageImageLayout = (LinearLayout) findViewById(R.id.messageImageLayout);
+        ImageView topLevelProfilePicture = (ImageView) findViewById(profilePicture);
+
+        LinearLayout pollVoteLayout = (LinearLayout) findViewById(R.id.pollVoteLayout);
+        LinearLayout pollResultsLayout = (LinearLayout) findViewById(R.id.pollResultsLayout);
 
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
         // Query the Yeet class with the objectId of the Comment that was sent with us here from the Intent bundle
@@ -243,7 +247,7 @@ public class CommentActivity extends AppCompatActivity {
                     ParseQuery<ParseUser> query2 = ParseUser.getQuery();
                     query2.whereEqualTo(ParseConstants.KEY_OBJECT_ID, topLevelCommentObject.getParseObject(ParseConstants.KEY_SENDER_AUTHOR_POINTER).getObjectId());
                     query2.findInBackground((user, e2) -> {
-                        for (ParseObject userObject : user) {
+                        if (e == null) for (ParseObject userObject : user) {
 
                             if (userObject.getParseFile("profilePicture") != null) {
                                 String profilePictureURL = userObject.getParseFile("profilePicture").getUrl();
@@ -264,7 +268,7 @@ public class CommentActivity extends AppCompatActivity {
                             if (!(userObject.getString(ParseConstants.KEY_AUTHOR_FULL_NAME).isEmpty())) {
                                 topLevelFullName.setText(userObject.getString(ParseConstants.KEY_AUTHOR_FULL_NAME));
                             } else {
-                                topLevelFullName.setText("Anonymous Lose");
+                                topLevelFullName.setText(R.string.anonymous_fullName);
                             }
 
                             topLevelUsername.setText(userObject.getString(ParseConstants.KEY_USERNAME));
@@ -302,6 +306,14 @@ public class CommentActivity extends AppCompatActivity {
                         setPremiumContent(View.VISIBLE);
                     } else {
                         setPremiumContent(View.GONE);
+                    }
+
+                    // Display Poll object
+                    if (topLevelCommentObject.getParseObject(ParseConstants.KEY_POLL_OBJECT) != null) {
+                        displayPollObject(topLevelCommentObject, commentId, userId);
+                    } else {
+                        pollResultsLayout.setVisibility(View.GONE);
+                        pollVoteLayout.setVisibility(View.GONE);
                     }
 
                     downloadMessageImage(topLevelMessageImage, topLevelCommentObject);
@@ -346,26 +358,263 @@ public class CommentActivity extends AppCompatActivity {
 
                     topLevelLikeImage.setOnClickListener(v -> {
                         v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.image_click));
-                        createLike(topLevelCommentObject, commentId, userId);
+                        createLike(topLevelCommentObject, commentId, userId, isOnline);
                     });
 
                     // Set profilePicture clickListener
-                    ImageView profilePicture = (ImageView) findViewById(R.id.profilePicture);
-                    profilePicture.setOnClickListener(v -> {
+                    topLevelProfilePicture.setOnClickListener(v -> {
                         v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.image_click));
                         retrievePointerObjectId(topLevelCommentObject);
                     });
 
                 }
 
+            } else {
+                Log.d("score", "Error: " + e.getMessage());
             }
         });
     }
+
+    private void displayPollObject(ParseObject topLevelCommentObject, String commentId, String userId) {
+
+        TextView option1 = (TextView) findViewById(R.id.option1);
+        TextView option2 = (TextView) findViewById(R.id.option2);
+        TextView option3 = (TextView) findViewById(R.id.option3);
+        TextView option4 = (TextView) findViewById(R.id.option4);
+        TextView value1 = (TextView) findViewById(R.id.value1);
+        TextView value2 = (TextView) findViewById(R.id.value2);
+        TextView value3 = (TextView) findViewById(R.id.value3);
+        TextView value4 = (TextView) findViewById(R.id.value4);
+        TextView vote1 = (TextView) findViewById(R.id.vote1);
+        TextView vote2 = (TextView) findViewById(R.id.vote2);
+        TextView vote3 = (TextView) findViewById(R.id.vote3);
+        TextView vote4 = (TextView) findViewById(R.id.vote4);
+
+        LinearLayout pollVoteLayout = (LinearLayout) findViewById(R.id.pollVoteLayout);
+        LinearLayout pollResultsLayout = (LinearLayout) findViewById(R.id.pollResultsLayout);
+
+        RelativeLayout resultLayout1 = (RelativeLayout) findViewById(R.id.resultLayout1);
+        RelativeLayout resultLayout2 = (RelativeLayout) findViewById(R.id.resultLayout2);
+        RelativeLayout resultLayout3 = (RelativeLayout) findViewById(R.id.resultLayout3);
+        RelativeLayout resultLayout4 = (RelativeLayout) findViewById(R.id.resultLayout4);
+
+        boolean isOnline = NetworkHelper.isOnline(getApplicationContext());
+
+        ParseQuery<ParseObject> pollQuery = new ParseQuery<>(ParseConstants.CLASS_POLL);
+        pollQuery.whereEqualTo(ParseConstants.KEY_OBJECT_ID, topLevelCommentObject.getParseObject(ParseConstants.KEY_POLL_OBJECT).getObjectId());
+        /*System.out.println(mYeets.get(position).getParseObject(ParseConstants.KEY_POLL_OBJECT).getObjectId());*/
+        if (!isOnline) {
+            pollQuery.fromLocalDatastore();
+        }
+        pollQuery.findInBackground((poll, e) -> {
+            if (e == null) for (ParseObject pollObject : poll) {
+
+                List<String> votedBy = pollObject.getList("votedBy");
+                /*System.out.println("Voted by: " + votedBy);*/
+
+                if (votedBy.contains(ParseUser.getCurrentUser().getObjectId())) {
+
+                    // If you have already voted, show the results panel
+                    pollResultsLayout.setVisibility(View.VISIBLE);
+                    pollVoteLayout.setVisibility(View.GONE);
+
+                    // Set poll options text
+                    option1.setText(pollObject.getString(ParseConstants.KEY_POLL_OPTION1));
+                    option2.setText(pollObject.getString(ParseConstants.KEY_POLL_OPTION2));
+                    option3.setText(pollObject.getString(ParseConstants.KEY_POLL_OPTION3));
+                    option4.setText(pollObject.getString(ParseConstants.KEY_POLL_OPTION4));
+
+                    toggleUnusedPollOptions(pollObject, resultLayout3, resultLayout4);
+
+                    // Total number of votes
+                    int votedTotal_int = pollObject.getList("votedBy").size();
+                    System.out.println("Total votes cast: " + Integer.toString(votedTotal_int));
+
+                    if (votedTotal_int > 0) {
+                        // Set poll options values
+                        int value1_int = pollObject.getList("value1Array").size();
+                        int value1_pct = ((value1_int / votedTotal_int) * 100);
+                        String value1_string = Integer.toString(value1_pct);
+                        value1.setText(value1_string + " %");
+
+                        int value2_int = pollObject.getList("value2Array").size();
+                        int value2_pct = ((value2_int / votedTotal_int) * 100);
+                        String value2_string = Integer.toString(value2_pct);
+                        value2.setText(value2_string + " %");
+
+                        int value3_int = pollObject.getList("value3Array").size();
+                        int value3_pct = ((value3_int / votedTotal_int) * 100);
+                        String value3_string = Integer.toString(value3_pct);
+                        value3.setText(value3_string + " %");
+
+                        int value4_int = pollObject.getList("value4Array").size();
+                        int value4_pct = ((value4_int / votedTotal_int) * 100);
+                        String value4_string = Integer.toString(value4_pct);
+                        value4.setText(value4_string + " %");
+                    }
+
+                } else {
+
+                    // If you have not voted, show the vote options panel
+                    pollVoteLayout.setVisibility(View.VISIBLE);
+                    pollResultsLayout.setVisibility(View.GONE);
+
+                    // Set poll options text
+                    vote1.setText(pollObject.getString(ParseConstants.KEY_POLL_OPTION1));
+                    vote2.setText(pollObject.getString(ParseConstants.KEY_POLL_OPTION2));
+                    vote3.setText(pollObject.getString(ParseConstants.KEY_POLL_OPTION3));
+                    vote4.setText(pollObject.getString(ParseConstants.KEY_POLL_OPTION4));
+
+                    toggleUnusedPollVotes(pollObject, vote3, resultLayout3, vote4, resultLayout4);
+
+                    if (!(votedBy.contains(ParseUser.getCurrentUser().getObjectId()))) {
+                        vote1.setOnClickListener(v -> {
+                            v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.image_click));
+
+                            // Add unique User objectId to votedBy array in Parse
+                            pollObject.addAllUnique("votedBy", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
+                            pollObject.increment(ParseConstants.KEY_POLL_VALUE1);
+                            pollObject.addAllUnique("value1Array", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
+                            pollObject.saveEventually();
+
+                            System.out.println("ObjectIds in the value1 Array: " + pollObject.getList("value1Array").toString());
+                            System.out.println("CurrentUser ObjectId: " + ParseUser.getCurrentUser().getObjectId());
+
+                            // Color in current user's poll selection
+                            /*if (pollObject.getList("value1Array").contains(ParseUser.getCurrentUser().getObjectId())) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                    holder.resultLayout1.setBackground(ContextCompat.getDrawable(mContext, R.drawable.rounded_border_textview_selected));
+                                }
+                            };*/
+
+                            // Refresh activity with commentId
+                            createTopLevelCommentObject(commentId, userId, true);
+
+                            // Toast
+                            Toast.makeText(getApplicationContext(), "Your votes are being recorded by the NSA!", Toast.LENGTH_SHORT).show();
+                        });
+
+                        vote2.setOnClickListener(v -> {
+                            v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.image_click));
+
+                            // Add unique User objectId to votedBy array in Parse
+                            pollObject.addAllUnique("votedBy", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
+                            pollObject.increment(ParseConstants.KEY_POLL_VALUE2);
+                            pollObject.addAllUnique("value2Array", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
+                            pollObject.saveEventually();
+
+                            // Color in current user's poll selection
+                            /*if (pollObject.getList("value2Array").contains(ParseUser.getCurrentUser().getObjectId())) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                    holder.resultLayout2.setBackground(ContextCompat.getDrawable(mContext, R.drawable.rounded_border_textview_selected));
+                                }
+                            };*/
+
+                            // Refresh activity with commentId
+                            createTopLevelCommentObject(commentId, userId, true);
+
+                            // Toast
+                            Toast.makeText(getApplicationContext(), "Your votes are being recorded by the NSA!", Toast.LENGTH_SHORT).show();
+                        });
+
+                        vote3.setOnClickListener(v -> {
+                            v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.image_click));
+
+                            // Add unique User objectId to votedBy array in Parse
+                            pollObject.addAllUnique("votedBy", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
+                            pollObject.increment(ParseConstants.KEY_POLL_VALUE3);
+                            pollObject.addAllUnique("value3Array", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
+                            pollObject.saveEventually();
+
+                            // Color in current user's poll selection
+                            /*if (pollObject.getList("value3Array").contains(ParseUser.getCurrentUser().getObjectId())) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                    holder.resultLayout3.setBackground(ContextCompat.getDrawable(mContext, R.drawable.rounded_border_textview_selected));
+                                }
+                            };*/
+
+                            // Refresh activity with commentId
+                            createTopLevelCommentObject(commentId, userId, true);
+
+                            // Toast
+                            Toast.makeText(getApplicationContext(), "Your votes are being recorded by the NSA!", Toast.LENGTH_SHORT).show();
+                        });
+
+                        vote4.setOnClickListener(v -> {
+                            v.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.image_click));
+
+                            // Add unique User objectId to votedBy array in Parse
+                            pollObject.addAllUnique("votedBy", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
+                            pollObject.increment(ParseConstants.KEY_POLL_VALUE4);
+                            pollObject.addAllUnique("value4Array", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
+                            pollObject.saveEventually();
+
+                            // Color in current user's poll selection
+                            /*if (pollObject.getList("value4Array").contains(ParseUser.getCurrentUser().getObjectId())) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                    holder.resultLayout4.setBackground(ContextCompat.getDrawable(mContext, R.drawable.rounded_border_textview_selected));
+                                }
+                            };*/
+
+                            // Refresh activity with commentId
+                            createTopLevelCommentObject(commentId, userId, true);
+
+                            // Toast
+                            Toast.makeText(getApplicationContext(), "Your votes are being recorded by the NSA!", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                }
+
+            }
+            else {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
+    private void toggleUnusedPollOptions(ParseObject pollObject, RelativeLayout resultLayout3, RelativeLayout resultLayout4) {
+        if (pollObject.getString(ParseConstants.KEY_POLL_OPTION3) != null) {
+            resultLayout3.setVisibility(View.VISIBLE);
+        } else {
+            resultLayout3.setVisibility(View.GONE);
+        }
+
+        if (pollObject.getString(ParseConstants.KEY_POLL_OPTION4) != null) {
+            resultLayout4.setVisibility(View.VISIBLE);
+        } else {
+            resultLayout4.setVisibility(View.GONE);
+        }
+    }
+
+
+    private void toggleUnusedPollVotes(ParseObject pollObject, TextView vote3, RelativeLayout resultLayout3, TextView vote4, RelativeLayout resultLayout4) {
+        if (pollObject.getString(ParseConstants.KEY_POLL_OPTION3) != null) {
+            vote3.setVisibility(View.VISIBLE);
+        } else {
+            vote3.setVisibility(View.GONE);
+            if (resultLayout3.getVisibility() == View.VISIBLE) {
+                resultLayout3.setVisibility(View.GONE);
+            }
+        }
+
+        if (pollObject.getString(ParseConstants.KEY_POLL_OPTION4) != null) {
+            vote4.setVisibility(View.VISIBLE);
+        } else {
+            vote4.setVisibility(View.GONE);
+            if (resultLayout4.getVisibility() == View.VISIBLE) {
+                resultLayout4.setVisibility(View.GONE);
+            }
+        }
+    }
+
 
     private void setRantTag(TextView topLevelMessage, LinearLayout topLevelLinearLayout, int color, int bgColor) {
         topLevelMessage.setTextColor(ContextCompat.getColor(getApplicationContext(), color));
         topLevelLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), bgColor));
     }
+
 
     private void downloadMessageImage(ImageView topLevelMessageImage, ParseObject topLevelCommentObject) {
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
@@ -397,7 +646,7 @@ public class CommentActivity extends AppCompatActivity {
     }
 
     /**
-     * @param topLevelCommentObject A list derived from the main "tweet" ParseObject (Yeet), from which also user information may be obtained via the _User pointer "author".
+     * @param topLevelCommentObject A list derived from the main "Yeet" ParseObject (Yeet), from which also user information may be obtained via the _User pointer "author".
      */
     private void retrievePointerObjectIdForReply(ParseObject topLevelCommentObject) {
         /*String commentId = String.valueOf(yeets.getParseObject(ParseConstants.KEY_SENDER_POST_POINTER).getObjectId());*/
@@ -468,7 +717,7 @@ public class CommentActivity extends AppCompatActivity {
         });
     }
 
-    private void createLike(ParseObject topLevelCommentObject, String commentId, String userId) {
+    private void createLike(ParseObject topLevelCommentObject, String commentId, String userId, boolean isOnline) {
 
         /*System.out.println(topLevelCommentObject.getObjectId());*/
 
@@ -487,10 +736,10 @@ public class CommentActivity extends AppCompatActivity {
 
                     // Add unique User objectId to likedBy array in Parse
                     commentObject.addAllUnique("likedBy", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
-                    commentObject.saveInBackground();
+                    commentObject.saveEventually();
 
                     // Increment the likeCount in the Comment feed
-                    incrementLikeCount(commentObject, commentId, userId);
+                    incrementLikeCount(commentObject, commentId, userId, isOnline);
 
                     // Initiate Like notification
                     handleLikeNotification(commentObject);
@@ -551,7 +800,7 @@ public class CommentActivity extends AppCompatActivity {
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             notification.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymous Lose");
+            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         notification.put(ParseConstants.KEY_NOTIFICATION_BODY, result);
@@ -569,7 +818,7 @@ public class CommentActivity extends AppCompatActivity {
         return notification;
     }
 
-    private void incrementLikeCount(ParseObject commentObject, String commentId, String userId) {
+    private void incrementLikeCount(ParseObject commentObject, String commentId, String userId, boolean isOnline) {
         // Query Like class for all Like objects that contain the related Comment objectId
         ParseQuery<ParseObject> query2 = new ParseQuery<>(ParseConstants.CLASS_LIKE);
         query2.whereEqualTo(ParseConstants.KEY_COMMENT_OBJECT_ID, commentObject);
@@ -578,10 +827,10 @@ public class CommentActivity extends AppCompatActivity {
 
                 // Increment likeCount on related Comment object
                 commentObject.increment("likeCount");
-                commentObject.saveInBackground();
+                commentObject.saveEventually();
 
-                retrieveYeets(commentId, userId);
-                createTopLevelCommentObject(commentId, userId);
+                retrieveYeets(commentId, userId, isOnline);
+                createTopLevelCommentObject(commentId, userId, isOnline);
 
             } else {
                 Log.e("Error", e2.getMessage());
@@ -602,7 +851,7 @@ public class CommentActivity extends AppCompatActivity {
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             message.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            message.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymouse Lose");
+            message.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         // Sender "author" pointer
@@ -627,7 +876,7 @@ public class CommentActivity extends AppCompatActivity {
 
         // If the reply is less than 140 characters, upload it to Parse
         if (!(result.length() > 140 || result.length() <= 0)) {
-            message.saveInBackground();
+            message.saveEventually();
 
             updateYeetPriority(commentId);
 
@@ -647,7 +896,7 @@ public class CommentActivity extends AppCompatActivity {
             int storedPreference = preferences.getInt("sound", 1);
             /*System.out.println("Application Sounds: " + storedPreference);*/
             if (storedPreference != 0) {
-                final MediaPlayer mp = MediaPlayer.create(this, R.raw.yeet);
+                final MediaPlayer mp = MediaPlayer.create(this, yeet);
                 mp.start();
             }
 
@@ -718,16 +967,18 @@ public class CommentActivity extends AppCompatActivity {
                     Date myDate = new Date();
                     topLevelCommentObject.put("lastReplyUpdatedAt", myDate);
 
-                    topLevelCommentObject.saveInBackground();
+                    topLevelCommentObject.saveEventually();
 
                 }
 
+            } else {
+                Log.d("score", "Error: " + e.getMessage());
             }
         });
     }
 
     /**
-     * @param yeets A list derived from the main "tweet" ParseObject (Yeet), from which also user information may be obtained via the _User pointer "author".
+     * @param yeets A list derived from the main "Yeet" ParseObject (Yeet), from which also user information may be obtained via the _User pointer "author".
      */
     private void retrievePointerObjectId(ParseObject yeets) {
         // We want to retrieve the permanent user objectId from the author of the Yeet so that we can always launch the user's profile, even if the author changes their username in the future.
@@ -760,7 +1011,7 @@ public class CommentActivity extends AppCompatActivity {
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             notification.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymous Lose");
+            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         notification.put(ParseConstants.KEY_NOTIFICATION_BODY, result);
@@ -797,18 +1048,21 @@ public class CommentActivity extends AppCompatActivity {
             if (!isOnline) {
                 mSwipeRefreshLayout.setRefreshing(false);
             } else {
-                // Retrieve all the comments associated with the top-level tweet's objectId
-                retrieveYeets(commentId, userId);
-                createTopLevelCommentObject(commentId, userId);
+                // Retrieve all the comments associated with the top-level Yeet's objectId
+                retrieveYeets(commentId, userId, true);
+                createTopLevelCommentObject(commentId, userId, true);
             }
         });
     }
 
-    private void retrieveYeets(String commentId, String userId) {
+    private void retrieveYeets(String commentId, String userId, boolean isOnline) {
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_COMMENT);
-        // Query the Comment class for comments that have a "post" column value equal to the objectId of the top-level tweet
+        // Query the Comment class for comments that have a "post" column value equal to the objectId of the top-level Yeet
         query.whereContains(ParseConstants.KEY_SENDER_PARSE_OBJECT_ID, commentId);
         query.addAscendingOrder(ParseConstants.KEY_CREATED_AT);
+        if (!isOnline) {
+            query.fromLocalDatastore();
+        }
         query.findInBackground((yeets, e) -> {
 
             if (mSwipeRefreshLayout.isRefreshing()) {
@@ -819,15 +1073,20 @@ public class CommentActivity extends AppCompatActivity {
 
                 // We found messages!
                 mYeets = yeets;
+                ParseObject.pinAllInBackground(mYeets);
 
-                CommentAdapter adapter = new CommentAdapter(getApplicationContext(), yeets);
+                CommentAdapter adapter = new CommentAdapter(getApplicationContext(), yeets, commentId);
+                adapter.setHasStableIds(true);
+                mRecyclerView.setHasFixedSize(true);
+                mRecyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL_LIST));
+                adapter.notifyDataSetChanged();
+                mRecyclerView.setAdapter(adapter);
 
-                if (recyclerView.getAdapter() != null) {
-                    adapter.setHasStableIds(true);
-                    recyclerView.hasFixedSize();
-                    recyclerView.setAdapter(adapter);
+                if (!isOnline) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    Toast.makeText(getApplicationContext(), getString(R.string.cannot_retrieve_messages), Toast.LENGTH_SHORT).show();
                 } else {
-                    adapter.notifyDataSetChanged();
+                    setSwipeRefreshLayout(true, commentId, userId);
                 }
 
             }

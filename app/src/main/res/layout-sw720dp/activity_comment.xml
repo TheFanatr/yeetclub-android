@@ -106,6 +106,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="3dp"
+                            android:layout_marginStart="3dp"
                             android:text="@string/_at"
                             android:textColor="@color/grey"
                             android:textSize="14sp"
@@ -135,8 +136,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="web"
+                            android:paddingEnd="5dp"
                             android:paddingLeft="0dp"
                             android:paddingRight="5dp"
+                            android:paddingStart="0dp"
                             android:singleLine="false"
                             android:textColor="@color/stroke"
                             android:textSize="18sp"
@@ -189,6 +192,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
                         android:contentDescription="@string/content_desc_reply"
                         android:src="@drawable/ic_action_reply_feed" />
 
@@ -205,6 +209,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:layout_marginLeft="25dp"
+                        android:layout_marginStart="25dp"
                         android:contentDescription="@string/content_desc_like"
                         android:src="@drawable/ic_action_like_feed" />
 
@@ -229,6 +234,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
+                        android:layout_marginEnd="10dp"
                         android:layout_marginRight="10dp"
                         android:layout_marginTop="10dp"
                         android:contentDescription="@string/premium_content"
@@ -245,7 +251,7 @@
                         android:layout_marginTop="10dp"
                         android:layout_toEndOf="@+id/premiumContent"
                         android:layout_toRightOf="@+id/premiumContent"
-                        android:gravity="left|start"
+                        android:gravity="start"
                         android:text="@string/premium_content_desc"
                         android:textSize="12sp"
                         android:visibility="gone" />
@@ -269,37 +275,13 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_action_reply" />
 
-    <RelativeLayout
-        android:id="@+id/rl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:background="#ffffff"
-        android:padding="15dp">
-
-        <TextView
-            android:id="@+id/networkOfflineText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/reconnect_button"
-            android:textColor="@color/highlight"
-            android:typeface="sans"
-            android:visibility="visible" />
-
-    </RelativeLayout>
-
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false"
         android:gravity="bottom"
         android:orientation="vertical"
         android:visibility="gone"

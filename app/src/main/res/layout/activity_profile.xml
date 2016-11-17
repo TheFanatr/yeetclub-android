@@ -153,7 +153,7 @@
                 android:fadeScrollbars="false"
                 android:scrollbarSize="10dp"
                 android:scrollbarThumbVertical="@drawable/custom_scroll_style"
-                android:scrollbars="vertical"></android.support.v7.widget.RecyclerView>
+                android:scrollbars="vertical" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -169,29 +169,5 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_send_feed" />
-
-    <RelativeLayout
-        android:id="@+id/rl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:background="#ffffff"
-        android:padding="15dp">
-
-        <TextView
-            android:id="@+id/networkOfflineText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/reconnect_button"
-            android:textColor="@color/highlight"
-            android:typeface="sans"
-            android:visibility="visible" />
-
-    </RelativeLayout>
 
 </RelativeLayout>

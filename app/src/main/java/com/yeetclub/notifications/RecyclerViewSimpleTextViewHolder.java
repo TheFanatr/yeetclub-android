@@ -12,6 +12,7 @@ public class RecyclerViewSimpleTextViewHolder extends RecyclerView.ViewHolder {
 
 
     private TextView label;
+
     public RecyclerViewSimpleTextViewHolder(View itemView) {
         super(itemView);
         label = (TextView) itemView.findViewById(android.R.id.text1);

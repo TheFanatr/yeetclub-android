@@ -2,24 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/toolbar"
-        android:layout_height="50dp"
-        android:minHeight="30dp"
         android:layout_width="match_parent"
-        android:paddingTop="10dp"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:minHeight="30dp"
         android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
-        android:background="@color/white">
+        app:contentInsetStart="0dp">
 
         <TextView
             android:id="@+id/feed_title"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/yaanich_news"
             android:textColor="@color/elgamiteal"
             android:textSize="18sp" />
@@ -32,38 +31,22 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar">
 
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-    <RelativeLayout
-        android:background="#ffffff"
-        android:layout_centerVertical="true"
-        android:padding="15dp"
-        android:id="@+id/rl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <TextView
+        <ListView
+            android:id="@+id/rssListView"
             android:layout_width="match_parent"
-            android:id="@+id/networkOfflineText"
             android:layout_height="wrap_content"
-            android:text="@string/reconnect_button"
-            android:padding="10dp"
-            android:typeface="sans"
-            android:gravity="center_horizontal"
-            android:visibility="visible"
-            android:textColor="@color/highlight"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true" />
+            android:fadeScrollbars="false"
+            android:scrollbarSize="10dp"
+            android:scrollbarThumbVertical="@drawable/custom_scroll_style" />
 
-    </RelativeLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <ListView
         android:id="@+id/listMainView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-    </ListView>
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbar" />
 
 </RelativeLayout>

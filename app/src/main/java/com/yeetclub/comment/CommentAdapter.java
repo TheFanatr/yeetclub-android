@@ -42,18 +42,21 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     protected Context mContext;
     protected List<ParseObject> mYeets;
     private CommentAdapter adapter;
+    private String commentId;
 
-    public CommentAdapter(Context context, List<ParseObject> yeets) {
+    public CommentAdapter(Context context, List<ParseObject> yeets, String commentId) {
         super();
 
         this.mContext = context;
         this.mYeets = yeets;
+        this.commentId = commentId;
         this.adapter = this;
     }
 
     private void setLikeImageHolderResource(int position, ViewHolder holder) {
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_COMMENT);
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, mYeets.get(position).getObjectId());
+        query.fromLocalDatastore();
         query.findInBackground((comment, e) -> {
             // Find the single Comment object associated with the current ListAdapter position
             if (e == null) for (ParseObject commentObject : comment) {
@@ -79,9 +82,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     }
 
     private void createLike(int position) {
-
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_COMMENT);
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, mYeets.get(position).getObjectId());
+        query.fromLocalDatastore();
         query.findInBackground((comment, e) -> {
             // Find the single Comment object associated with the current ListAdapter position
             if (e == null) for (ParseObject commentObject : comment) {
@@ -95,7 +98,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
                     // Add unique User objectId to likedBy array in Parse
                     commentObject.addAllUnique("likedBy", Collections.singletonList(ParseUser.getCurrentUser().getObjectId()));
-                    commentObject.saveInBackground();
+                    commentObject.saveEventually();
 
                     // Increment the likeCount in the Comment feed
                     incrementLikeCount(commentObject, position);
@@ -165,7 +168,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             notification.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymous Lose");
+            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         notification.put(ParseConstants.KEY_NOTIFICATION_BODY, result);
@@ -199,9 +202,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     private void incrementLikeCount(ParseObject commentObject, int position) {
         // Increment likeCount on related Comment object
         commentObject.increment("likeCount");
-        mYeets.get(position).increment("likeCount");
         this.adapter.notifyDataSetChanged();
-        commentObject.saveInBackground();
+        commentObject.saveEventually();
     }
 
     private void deleteComment(int position) {
@@ -209,6 +211,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         ParseQuery<ParseObject> query = new ParseQuery<>("Comment");
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, mYeets.get(position).getObjectId());
         query.whereContains(ParseConstants.KEY_SENDER_ID, currentUserObjectId);
+        query.fromLocalDatastore();
         query.findInBackground((yeet, e) -> {
             if (e == null) {
 
@@ -224,9 +227,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                             mYeets.remove(position);
                             notifyItemRemoved(position);
                             notifyItemRangeChanged(position, mYeets.size());
+                            this.adapter.notifyItemRemoved(position);
                             this.adapter.notifyDataSetChanged();
 
-                            Toast.makeText(mContext, "Yeet deleted", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, R.string.message_deleted, Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -239,9 +243,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     }
 
     private void decrementReplyCount(ParseObject yeetObject) {
-
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, yeetObject.getString(ParseConstants.KEY_SENDER_PARSE_OBJECT_ID));
+        query.fromLocalDatastore();
         query.findInBackground((yeet, e) -> {
 
             // Find the single Comment object associated with the current ListAdapter position
@@ -253,17 +257,17 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 Log.w(getClass().toString(), "Do we get here?");*/
                 if (!((yeetObject2.getInt("replyCount")) == 0)) {
                     yeetObject2.increment("replyCount", -1);
-                    yeetObject2.saveInBackground();
+                    yeetObject2.saveEventually();
                 }
 
             }
-            });
+        });
 
     }
 
     /**
      *
-     * @param yeets A list derived from the main "tweet" ParseObject (Yeet), from which also user information may be obtained via the _User pointer "author".
+     * @param yeets A list derived from the main "Yeet" ParseObject (Yeet), from which also user information may be obtained via the _User pointer "author".
      */
     private void retrievePointerObjectId(ParseObject yeets) {
         // We want to retrieve the permanent user objectId from the author of the Yeet so that we can always launch the user's profile, even if the author changes their username in the future.
@@ -347,11 +351,43 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     }
 
+    /**
+     * @param yeets A list derived from the main "Yeet" ParseObject (Yeet), from which also user information may be obtained via the _User pointer "author".
+     */
+    private void retrievePointerObjectIdForReply(ParseObject yeets) {
+        /*String commentId = String.valueOf(yeets.getParseObject(ParseConstants.KEY_SENDER_POST_POINTER).getObjectId());*/
+
+        // We retrieve the permanent objectId of the Yeet
+        String userId = String.valueOf(yeets.getParseObject(ParseConstants.KEY_SENDER_AUTHOR_POINTER).getObjectId());
+        String commentId = String.valueOf(yeets.getObjectId());
+
+        // We use the generated commentId to launch the comment activity so that we can populate it with relevant messages
+        startReplyActivity(commentId, userId);
+    }
+
+    private void startReplyActivity(String commentId, String userId) {
+        /**
+         * If the previously generated commentId is empty, we return nothing. This probably only occurs in the rare instance that the comment was deleted
+         * from the database.
+         */
+        if (commentId == null || commentId.isEmpty()) {
+            return;
+        }
+
+        // Here we launch a generic commenty activity class...
+        Intent intent = new Intent(mContext, ReplyActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // ...and send along some information so that we can populate it with the relevant comments.
+        intent.putExtra(ParseConstants.KEY_OBJECT_ID, commentId);
+        intent.putExtra(ParseConstants.KEY_SENDER_ID, userId);
+        mContext.startActivity(intent);
+    }
+
     private void downloadProfilePicture(ViewHolder holder, ParseObject yeets) {
         // Asynchronously display the profile picture downloaded from parse
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, yeets.getParseObject(ParseConstants.KEY_SENDER_AUTHOR_POINTER).getObjectId());
-
+        query.fromLocalDatastore();
         query.findInBackground((user, e) -> {
             if (e == null) for (ParseObject userObject : user) {
 
@@ -374,7 +410,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 if (!(userObject.getString(ParseConstants.KEY_AUTHOR_FULL_NAME).isEmpty())) {
                     holder.fullName.setText(userObject.getString(ParseConstants.KEY_AUTHOR_FULL_NAME));
                 } else {
-                    holder.fullName.setText("Anonymous Lose");
+                    holder.fullName.setText(R.string.anonymous_fullName);
                 }
 
                 holder.username.setText(userObject.getString(ParseConstants.KEY_USERNAME));
@@ -386,6 +422,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     private void downloadMessageImage(ViewHolder holder, int position) {
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_COMMENT);
         query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, mYeets.get(position).getObjectId());
+        query.fromLocalDatastore();
         query.findInBackground((user, e) -> {
             if (e == null) for (ParseObject userObject : user) {
 

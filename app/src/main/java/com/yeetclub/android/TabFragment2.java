@@ -23,6 +23,7 @@ import com.yeetclub.notifications.NotificationsAdapter;
 import com.yeetclub.parse.ParseConstants;
 import com.yeetclub.utility.NetworkHelper;
 
+import java.util.Date;
 import java.util.List;
 
 public class TabFragment2 extends Fragment {
@@ -50,8 +51,11 @@ public class TabFragment2 extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Is the network online?
+        boolean isOnline = NetworkHelper.isOnline(getContext());
+
         // Initialize dataset from remote server
-        retrieveNotifications();
+        retrieveNotifications(isOnline);
     }
 
     @Override
@@ -73,13 +77,10 @@ public class TabFragment2 extends Fragment {
         // Is the network online?
         boolean isOnline = NetworkHelper.isOnline(getContext());
 
-        // Hide or show views associated with network state
-        rootView.findViewById(R.id.networkOfflineText).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-        rootView.findViewById(R.id.rl).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-
         rootView.setFocusableInTouchMode(true);
         rootView.requestFocus();
 
+        // Return to first fragment on back press
         rootView.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -92,17 +93,15 @@ public class TabFragment2 extends Fragment {
         });
 
         // Retrieve Data from Parse
-        retrieveNotifications(rootView);
+        retrieveNotifications(rootView, isOnline);
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             if (!isOnline) {
                 mSwipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(getContext(), getString(R.string.cannot_retrieve_messages), Toast.LENGTH_SHORT).show();
             } else {
-                // Set all current notifications to "read"
-                setReadState();
-
                 // Retrieve new notifications
-                retrieveNotifications(rootView);
+                retrieveNotifications(rootView, isOnline);
             }
         });
 
@@ -143,7 +142,7 @@ public class TabFragment2 extends Fragment {
                     // System.out.println(notificationObject);
                     if (!(notificationObject.getBoolean(ParseConstants.KEY_READ_STATE))) {
                         notificationObject.put(ParseConstants.KEY_READ_STATE, true);
-                        notificationObject.saveInBackground();
+                        notificationObject.saveEventually();
                     }
 
                 }
@@ -191,10 +190,13 @@ public class TabFragment2 extends Fragment {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    private void retrieveNotifications(View rootView) {
+    private void retrieveNotifications(View rootView, Boolean isOnline) {
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_NOTIFICATIONS);
         query.whereEqualTo(ParseConstants.KEY_RECIPIENT_ID, ParseUser.getCurrentUser().getObjectId());
         query.addDescendingOrder(ParseConstants.KEY_CREATED_AT);
+        if (!isOnline) {
+            query.fromLocalDatastore();
+        }
         query.findInBackground((notifications, e) -> {
 
             if (mSwipeRefreshLayout.isRefreshing()) {
@@ -205,6 +207,7 @@ public class TabFragment2 extends Fragment {
 
                 // We found messages!
                 mNotifications = notifications;
+                ParseObject.pinAllInBackground(mNotifications);
 
                 if (notifications.isEmpty()) {
                     showViews(rootView);
@@ -213,14 +216,62 @@ public class TabFragment2 extends Fragment {
                 NotificationsAdapter adapter = new NotificationsAdapter(getContext(), notifications);
                 adapter.setHasStableIds(true);
                 mRecyclerView.setHasFixedSize(true);
+                mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
                 adapter.notifyDataSetChanged();
                 mRecyclerView.setAdapter(adapter);
+
+                mSwipeRefreshLayout.setOnRefreshListener(() -> {
+                    if (!isOnline) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(getContext(), getString(R.string.cannot_retrieve_messages), Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Set all current notifications to "read"
+                        setReadState();
+
+                        Date onRefreshDate = new Date();
+                        /*System.out.println(onRefreshDate.getTime());*/
+                        refreshYeets(onRefreshDate, adapter);
+                    }
+                });
 
             }
         });
     }
 
-    private void retrieveNotifications() {
+    private void refreshYeets(Date date, NotificationsAdapter adapter) {
+        ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_NOTIFICATIONS);
+        query.whereEqualTo(ParseConstants.KEY_RECIPIENT_ID, ParseUser.getCurrentUser().getObjectId());
+        query.addDescendingOrder(ParseConstants.KEY_CREATED_AT);
+        if (date != null)
+            query.whereLessThanOrEqualTo("createdAt", date);
+        query.setLimit(1000);
+        query.findInBackground((notifications, e) -> {
+
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+
+            if (e == null) {
+                // We found messages!
+                mNotifications.removeAll(notifications);
+                mNotifications.addAll(0, notifications); //This should append new messages to the top
+                adapter.notifyDataSetChanged();
+                ParseObject.pinAllInBackground(mNotifications);
+
+                /*System.out.println(yeets);*/
+                if (mRecyclerView.getAdapter() == null) {
+                    adapter.setHasStableIds(true);
+                    mRecyclerView.setHasFixedSize(true);
+                    adapter.notifyDataSetChanged();
+                    mRecyclerView.setAdapter(adapter);
+                } else {
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    private void retrieveNotifications(Boolean isOnline) {
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_NOTIFICATIONS);
         query.whereEqualTo(ParseConstants.KEY_RECIPIENT_ID, ParseUser.getCurrentUser().getObjectId());
         query.addDescendingOrder(ParseConstants.KEY_CREATED_AT);
@@ -234,12 +285,25 @@ public class TabFragment2 extends Fragment {
 
                 // We found messages!
                 mNotifications = notifications;
+                ParseObject.pinAllInBackground(mNotifications);
 
                 NotificationsAdapter adapter = new NotificationsAdapter(getContext(), notifications);
                 adapter.setHasStableIds(true);
                 mRecyclerView.setHasFixedSize(true);
+                /*mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));*/
                 adapter.notifyDataSetChanged();
                 mRecyclerView.setAdapter(adapter);
+
+                mSwipeRefreshLayout.setOnRefreshListener(() -> {
+                    if (!isOnline) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(getContext(), getString(R.string.cannot_retrieve_messages), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Date onRefreshDate = new Date();
+                        /*System.out.println(onRefreshDate.getTime());*/
+                        refreshYeets(onRefreshDate, adapter);
+                    }
+                });
 
             }
         });

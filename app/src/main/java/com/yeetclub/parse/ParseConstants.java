@@ -10,6 +10,7 @@ public class ParseConstants {
     public static final String CLASS_YEET = "Yeet";
     public static final String CLASS_COMMENT = "Comment";
     public static final String CLASS_LIKE = "Like";
+    public static final String CLASS_POLL = "Poll";
 
     // Field names
     public static final String KEY_USERNAME = "username";
@@ -34,6 +35,16 @@ public class ParseConstants {
     public static final String KEY_LIKE_COUNT = "likeCount";
     public static final String KEY_RANT_ID = "rantId";
     public static final String KEY_READ_STATE = "read";
+    public static final String KEY_POLL_OBJECT = "pollObject";
+    public static final String KEY_POLL_OPTION1 = "option1";
+    public static final String KEY_POLL_OPTION2 = "option2";
+    public static final String KEY_POLL_OPTION3 = "option3";
+    public static final String KEY_POLL_OPTION4 = "option4";
+    public static final String KEY_POLL_VALUE1 = "value1";
+    public static final String KEY_POLL_VALUE2 = "value2";
+    public static final String KEY_POLL_VALUE3 = "value3";
+    public static final String KEY_POLL_VALUE4 = "value4";
+
 
     // Notification types
     public static final String KEY_NOTIFICATION_TYPE = "notificationType";

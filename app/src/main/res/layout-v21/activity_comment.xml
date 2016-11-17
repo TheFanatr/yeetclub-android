@@ -161,6 +161,248 @@
 
                 </TableLayout>
 
+                <LinearLayout
+                    android:id="@+id/pollVoteLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/vote1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="0dp"
+                        android:background="@drawable/rounded_border_textview"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:padding="3dp"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:text="@string/option_1"
+                        android:textColor="@color/highlight"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/vote2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="0dp"
+                        android:background="@drawable/rounded_border_textview"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:padding="3dp"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:text="@string/option_2"
+                        android:textColor="@color/highlight"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/vote3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="0dp"
+                        android:background="@drawable/rounded_border_textview"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:padding="3dp"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:text="@string/option_3"
+                        android:textColor="@color/highlight"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/vote4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="0dp"
+                        android:background="@drawable/rounded_border_textview"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:padding="3dp"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:text="@string/option_4"
+                        android:textColor="@color/highlight"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/pollResultsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <RelativeLayout
+                        android:id="@+id/resultLayout1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="5dp"
+                        android:padding="5dp">
+
+                        <TextView
+                            android:id="@+id/option1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-light"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            android:text="@string/option_1"
+                            android:textColor="@color/stroke"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/value1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="5dp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-light"
+                            android:paddingEnd="1dp"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            android:text="@string/value_1"
+                            android:textColor="@color/stroke"
+                            android:textSize="18sp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/resultLayout2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="5dp"
+                        android:padding="5dp">
+
+                        <TextView
+                            android:id="@+id/option2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-light"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            android:text="@string/option_1"
+                            android:textColor="@color/stroke"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/value2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="5dp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-light"
+                            android:paddingEnd="1dp"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            android:text="@string/value_1"
+                            android:textColor="@color/stroke"
+                            android:textSize="18sp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/resultLayout3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="5dp"
+                        android:padding="5dp">
+
+                        <TextView
+                            android:id="@+id/option3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-light"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            android:text="@string/option_1"
+                            android:textColor="@color/stroke"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/value3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="5dp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-light"
+                            android:paddingEnd="1dp"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            android:text="@string/value_1"
+                            android:textColor="@color/stroke"
+                            android:textSize="18sp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/resultLayout4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="5dp"
+                        android:padding="5dp">
+
+                        <TextView
+                            android:id="@+id/option4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-light"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            android:text="@string/option_1"
+                            android:textColor="@color/stroke"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/value4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="5dp"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="sans-serif-light"
+                            android:paddingEnd="1dp"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            android:text="@string/value_1"
+                            android:textColor="@color/stroke"
+                            android:textSize="18sp" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/messageImageLayout"
                     android:layout_width="match_parent"
@@ -268,30 +510,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_action_reply" />
 
-    <RelativeLayout
-        android:id="@+id/rl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:background="#ffffff"
-        android:padding="15dp">
-
-        <TextView
-            android:id="@+id/networkOfflineText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/reconnect_button"
-            android:textColor="@color/highlight"
-            android:typeface="sans"
-            android:visibility="visible" />
-
-    </RelativeLayout>
-
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
@@ -361,30 +579,29 @@
             android:scrollbarThumbVertical="@drawable/custom_scroll_style"
             android:scrollbars="vertical" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-    <RelativeLayout
-        android:id="@+id/noTopLevelCommentObject"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/highlight"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/yeetDeleted"
+        <RelativeLayout
+            android:id="@+id/noTopLevelCommentObject"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center_horizontal"
-            android:text="@string/yeet_deleted"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:typeface="sans"
-            android:visibility="gone" />
+            android:layout_height="match_parent"
+            android:background="@color/highlight"
+            android:visibility="gone">
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/yeetDeleted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_horizontal"
+                android:text="@string/yeet_deleted"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:typeface="sans"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

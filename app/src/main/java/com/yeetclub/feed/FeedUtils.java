@@ -19,61 +19,54 @@ public class FeedUtils {
     private static final long DAY_IN_MILLIS = HOUR_IN_MILLIS * 24;
     private static final long WEEK_IN_MILLIS = DAY_IN_MILLIS * 7;
 
-    public static void CopyStream(InputStream is, OutputStream os)
-    {
-        final int buffer_size=1024;
-        try
-        {
-            byte[] bytes=new byte[buffer_size];
-            for(;;)
-            {
-                int count=is.read(bytes, 0, buffer_size);
-                if(count==-1)
+    public static void CopyStream(InputStream is, OutputStream os) {
+        final int buffer_size = 1024;
+        try {
+            byte[] bytes = new byte[buffer_size];
+            for (; ; ) {
+                int count = is.read(bytes, 0, buffer_size);
+                if (count == -1)
                     break;
                 os.write(bytes, 0, count);
             }
+        } catch (Exception ex) {
         }
-        catch(Exception ex){}
     }
 
     // take the difference in time (as milliseconds) and return the number of minutes, or hours, or days,
     // or weeks depending on which bracket the time fits in.
     public static String MSToDate(long deltaMS) {
 
-        if(deltaMS < MINUTE_IN_MILLIS) {
+        if (deltaMS < MINUTE_IN_MILLIS) {
             return "0m";
-        }
-        else if(deltaMS < HOUR_IN_MILLIS) {
+        } else if (deltaMS < HOUR_IN_MILLIS) {
             return MSToMinute(deltaMS);
-        }
-        else if(deltaMS < DAY_IN_MILLIS) {
+        } else if (deltaMS < DAY_IN_MILLIS) {
             return MSToHour(deltaMS);
-        }
-        else if(deltaMS < WEEK_IN_MILLIS) {
+        } else if (deltaMS < WEEK_IN_MILLIS) {
             return MSToDay(deltaMS);
-        }
-        else {
+        } else {
             return MSToWeek(deltaMS);
         }
 
     }
 
-    private static String MSToMinute (long deltaMS) {
+    private static String MSToMinute(long deltaMS) {
         int minutes = (int) (deltaMS / MINUTE_IN_MILLIS);
         return minutes + "m";
     }
 
-    private static String MSToHour (long deltaMS) {
+    private static String MSToHour(long deltaMS) {
         int hours = (int) (deltaMS / HOUR_IN_MILLIS);
         return hours + "h";
     }
 
-    private static String MSToDay (long deltaMS) {
+    private static String MSToDay(long deltaMS) {
         int days = (int) (deltaMS / DAY_IN_MILLIS);
         return days + "d";
     }
 
-    private static String MSToWeek (long deltaMS) {
+    private static String MSToWeek(long deltaMS) {
         int weeks = (int) (deltaMS / WEEK_IN_MILLIS);
         return weeks + "w";
     }

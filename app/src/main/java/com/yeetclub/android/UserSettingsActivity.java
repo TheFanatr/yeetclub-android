@@ -246,7 +246,7 @@ public class UserSettingsActivity extends PreferenceActivity {
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             message.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            message.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymous Lose");
+            message.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         message.put(ParseConstants.KEY_SENDER_AUTHOR_POINTER, ParseUser.getCurrentUser());
@@ -267,7 +267,7 @@ public class UserSettingsActivity extends PreferenceActivity {
             message.put(ParseConstants.KEY_SENDER_PROFILE_PICTURE, ParseUser.getCurrentUser().getParseFile("profilePicture").getUrl());
         }
 
-        message.saveInBackground();
+        message.saveEventually();
     }
 
 }

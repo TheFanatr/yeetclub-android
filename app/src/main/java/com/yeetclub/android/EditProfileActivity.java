@@ -66,9 +66,9 @@ public class EditProfileActivity extends AppCompatActivity {
         String userId = currentUser.getObjectId();
 
         boolean isOnline = NetworkHelper.isOnline(this);
+
+        // Hide or show views associated with network state
         LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
-        findViewById(R.id.networkOfflineText).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-        findViewById(R.id.rl).setVisibility(isOnline ? View.GONE : View.VISIBLE);
         ll.setVisibility(isOnline ? View.VISIBLE : View.GONE);
         findViewById(R.id.submitProfileChanges).setVisibility(isOnline ? View.VISIBLE : View.GONE);
 
@@ -111,7 +111,7 @@ public class EditProfileActivity extends AppCompatActivity {
             user1.put("bio", bioField.getText().toString());
             user1.put("bae", baeField.getText().toString());
 
-            user1.saveInBackground(e -> RefreshActivity());
+            user1.saveEventually(e -> RefreshActivity());
         });
     }
 

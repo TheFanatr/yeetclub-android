@@ -106,12 +106,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="3dp"
                             android:layout_marginStart="3dp"
                             android:fontFamily="sans-serif-light"
                             android:text="@string/_at"
                             android:textColor="@color/grey"
-                            android:textSize="14sp"
-                            android:layout_marginLeft="3dp" />
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/topLevelUsername"
@@ -138,13 +138,13 @@
                             android:layout_height="wrap_content"
                             android:autoLink="web"
                             android:fontFamily="sans-serif-light"
-                            android:paddingStart="0dp"
                             android:paddingEnd="5dp"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="5dp"
+                            android:paddingStart="0dp"
                             android:textColor="@color/stroke"
                             android:textSize="18sp"
-                            tools:text="This is the body text of the yeet."
-                            android:paddingLeft="0dp"
-                            android:paddingRight="5dp" />
+                            tools:text="This is the body text of the yeet." />
 
                     </TableRow>
 
@@ -192,10 +192,10 @@
                         android:id="@+id/replyImage"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:contentDescription="@string/content_desc_reply"
-                        android:src="@drawable/ic_action_reply_feed"
-                        android:layout_marginLeft="5dp" />
+                        android:src="@drawable/ic_action_reply_feed" />
 
                     <TextView
                         android:id="@+id/replyCount"
@@ -209,10 +209,10 @@
                         android:id="@+id/likeImage"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
+                        android:layout_marginLeft="25dp"
                         android:layout_marginStart="25dp"
                         android:contentDescription="@string/content_desc_like"
-                        android:src="@drawable/ic_action_like_feed"
-                        android:layout_marginLeft="25dp" />
+                        android:src="@drawable/ic_action_like_feed" />
 
                     <TextView
                         android:id="@+id/likeCount"
@@ -236,13 +236,13 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
                         android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
                         android:layout_marginTop="10dp"
                         android:contentDescription="@string/premium_content"
                         android:foregroundGravity="center_vertical|center|center_horizontal"
                         android:gravity="center_vertical|center|center_horizontal"
                         android:src="@drawable/ic_premium_content"
-                        android:visibility="gone"
-                        android:layout_marginRight="10dp" />
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/premiumContentText"
@@ -276,43 +276,17 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_action_reply" />
 
-    <RelativeLayout
-        android:id="@+id/rl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:background="#ffffff"
-        android:padding="15dp">
-
-        <TextView
-            android:id="@+id/networkOfflineText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/reconnect_button"
-            android:textColor="@color/highlight"
-            android:typeface="sans"
-            android:visibility="visible"
-            android:layout_alignParentLeft="true" />
-
-    </RelativeLayout>
-
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="false"
         android:layout_alignParentStart="false"
         android:gravity="bottom"
         android:orientation="vertical"
         android:visibility="gone"
-        android:weightSum="1"
-        android:layout_alignParentLeft="false">
+        android:weightSum="1">
 
         <TextView
             android:layout_width="match_parent"

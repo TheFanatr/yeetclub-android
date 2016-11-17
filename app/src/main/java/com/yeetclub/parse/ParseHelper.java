@@ -26,16 +26,16 @@ public class ParseHelper {
     public static YeetClubUser GetUserInformation(String objectId) throws ParseException {
         return CreateHyperCycleUser(
                 (objectId == null || isCurrentUser(objectId)) ?
-                ParseUser.getCurrentUser() :
+                        ParseUser.getCurrentUser() :
 
-                ParseUser.getQuery().get(objectId)
+                        ParseUser.getQuery().get(objectId)
         );
     }
 
     public static YeetClubUser CreateHyperCycleUser(ParseUser userObject) {
 
         // sanity check
-        if(userObject == null) {
+        if (userObject == null) {
             return null;
         }
 
@@ -57,7 +57,7 @@ public class ParseHelper {
         // get the image
         ParseFile image = (ParseFile) userObject.get("profilePicture");
 
-        if(image != null) {
+        if (image != null) {
             user.setProfilePictureURL(image.getUrl());
         }
 
@@ -67,7 +67,7 @@ public class ParseHelper {
     public static void UploadProfilePictureToCurrentUser(Bitmap bitmap) {
 
         // sanity check
-        if(bitmap == null) {
+        if (bitmap == null) {
             Log.d(TAG, "Unable to save profile picture. imageUri is null.");
             return;
         }
@@ -85,7 +85,7 @@ public class ParseHelper {
 
         ParseUser currentUser = ParseUser.getCurrentUser();
 
-        if(currentUser == null) {
+        if (currentUser == null) {
             Log.d(TAG, "Unable to save profile picture. Current user is null");
             return;
         }

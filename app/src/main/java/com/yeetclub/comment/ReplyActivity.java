@@ -173,7 +173,7 @@ public class ReplyActivity extends AppCompatActivity {
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             message.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            message.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymous Lose");
+            message.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         // Send author Pointer
@@ -198,7 +198,7 @@ public class ReplyActivity extends AppCompatActivity {
 
         // Conditions for sending message
         if (!(result.length() > 140 || result.length() <= 0)) {
-            message.saveInBackground();
+            message.saveEventually();
 
             // Send notification
             if (!userId.equals(ParseUser.getCurrentUser().getObjectId())) {
@@ -293,7 +293,7 @@ public class ReplyActivity extends AppCompatActivity {
                     Date myDate = new Date();
                     topLevelCommentObject.put("lastReplyUpdatedAt", myDate);
 
-                    topLevelCommentObject.saveInBackground();
+                    topLevelCommentObject.saveEventually();
 
                 }
 
@@ -312,7 +312,7 @@ public class ReplyActivity extends AppCompatActivity {
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             notification.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymous Lose");
+            notification.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         notification.put(ParseConstants.KEY_NOTIFICATION_BODY, result);

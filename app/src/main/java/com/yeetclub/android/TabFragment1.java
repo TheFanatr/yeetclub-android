@@ -12,8 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -64,28 +63,14 @@ public class TabFragment1 extends Fragment {
         View rootView = inflater.inflate(R.layout.tab_fragment_1, container, false);
         rootView.setTag(TAG);
 
-        // Find loading views
-        RelativeLayout noAdapterBackground = (RelativeLayout) getActivity().findViewById(R.id.noAdapterBackground);
-        RelativeLayout noAdapterContainer = (RelativeLayout) getActivity().findViewById(R.id.noAdapterContainer);
-        TextView noAdapterLogo = (TextView) getActivity().findViewById(R.id.noAdapterLogo);
-
-        // Set loading views initially to visible
-        noAdapterBackground.setVisibility(View.VISIBLE);
-        noAdapterContainer.setVisibility(View.VISIBLE);
-        noAdapterLogo.setVisibility(View.VISIBLE);
-
         // Initialize SwipeRefreshLayout
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
 
         // Is the network online?
         boolean isOnline = NetworkHelper.isOnline(getContext());
 
-        // Hide or show views associated with network state
-        rootView.findViewById(R.id.networkOfflineText).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-        rootView.findViewById(R.id.rl).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-
         // Retrieve Data from remote server
-        retrieveData(isOnline, noAdapterBackground, noAdapterContainer, noAdapterLogo);
+        retrieveData(isOnline);
 
         // Set RecyclerView layout
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
@@ -109,13 +94,15 @@ public class TabFragment1 extends Fragment {
         return rootView;
     }
 
-    private void retrieveData(boolean isOnline, RelativeLayout noAdapterBackground, RelativeLayout noAdapterContainer, TextView noAdapterLogo) {
-
+    private void retrieveData(boolean isOnline) {
         String groupId = ParseUser.getCurrentUser().getString("groupId");
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
         query.whereContains(ParseConstants.KEY_GROUP_ID, groupId);
         query.orderByDescending("lastReplyUpdatedAt");
         query.setLimit(1000);
+        if (!isOnline) {
+            query.fromLocalDatastore();
+        }
         query.findInBackground((yeets, e) -> {
 
             if (mSwipeRefreshLayout.isRefreshing()) {
@@ -126,31 +113,26 @@ public class TabFragment1 extends Fragment {
 
                 // We found messages!
                 mYeets = yeets;
+                ParseObject.pinAllInBackground(mYeets);
                 /*System.out.println(yeets);*/
-
-                noAdapterBackground.setVisibility(View.GONE);
-                noAdapterContainer.setVisibility(View.GONE);
-                noAdapterLogo.setVisibility(View.GONE);
 
                 FeedAdapter adapter = new FeedAdapter(getContext(), yeets);
                 adapter.setHasStableIds(true);
                 mRecyclerView.setHasFixedSize(true);
+                mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
                 adapter.notifyDataSetChanged();
                 mRecyclerView.setAdapter(adapter);
 
                 mSwipeRefreshLayout.setOnRefreshListener(() -> {
                     if (!isOnline) {
                         mSwipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(getContext(), getString(R.string.cannot_retrieve_messages), Toast.LENGTH_SHORT).show();
                     } else {
                         Date onRefreshDate = new Date();
                         /*System.out.println(onRefreshDate.getTime());*/
                         refreshYeets(onRefreshDate, adapter);
                     }
                 });
-            } else {
-                noAdapterBackground.setVisibility(View.VISIBLE);
-                noAdapterContainer.setVisibility(View.VISIBLE);
-                noAdapterLogo.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -171,7 +153,11 @@ public class TabFragment1 extends Fragment {
 
             if (e == null) {
                 // We found messages!
+                mYeets.removeAll(yeets);
                 mYeets.addAll(0, yeets); //This should append new messages to the top
+                adapter.notifyDataSetChanged();
+                ParseObject.pinAllInBackground(mYeets);
+
                 /*System.out.println(yeets);*/
                 if (mRecyclerView.getAdapter() == null) {
                     adapter.setHasStableIds(true);

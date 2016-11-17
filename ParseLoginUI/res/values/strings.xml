@@ -69,8 +69,6 @@
     <string name="menu_pattern_central">Pattern Central</string>
     <string name="menu_settings">Settings</string>
     <string name="reconnect_button">You are currently disconnected from the Internet. Please reconnect.</string>
-    <string name="notifications_prompt">Click here to the roll around in feces until your friends tell you something cool!</string>
-    <string name="notifications_message">This is where cucky shitlords send you love!</string>
     <string name="edit_profile_bio">Bio</string>
     <string name="com_parse_ui_group_input_hint">Yecret Key</string>
     <string name="com_parse_ui_no_group_toast">You must include a valid yecret key</string>

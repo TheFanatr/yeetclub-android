@@ -107,17 +107,16 @@ public class ChangePasswordActivity extends AppCompatActivity {
         });
 
         // Link to Forgot Password activity
-        TextView launchParseLoginHelpFragment = (TextView) findViewById(R.id.changePassword);
-        launchParseLoginHelpFragment.setOnClickListener(v -> {
+        mForgotPasswordField.setOnClickListener(v -> {
             Intent intent = new Intent(ChangePasswordActivity.this, DispatchActivity.class);
             intent.putExtra("ParseLoginHelpFragment", true);
             startActivity(intent);
         });
 
         boolean isOnline = NetworkHelper.isOnline(this);
+
+        // Hide or show views associated with network state
         LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
-        findViewById(R.id.networkOfflineText).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-        findViewById(R.id.rl).setVisibility(isOnline ? View.GONE : View.VISIBLE);
         ll.setVisibility(isOnline ? View.VISIBLE : View.GONE);
         findViewById(R.id.submitPasswordChanges).setVisibility(isOnline ? View.VISIBLE : View.GONE);
 

@@ -40,6 +40,7 @@ import com.yeetclub.utility.NetworkHelper;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -85,7 +86,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
                 initialise(userId);
 
-                // Populate profile with tweets from user we are visiting
+                // Populate profile with Yeets from user we are visiting
                 setSwipeRefreshLayout(isOnline, userId);
 
                 if (userId != null && userId.equals(ParseUser.getCurrentUser().getObjectId())) {
@@ -103,13 +104,11 @@ public class UserProfileActivity extends AppCompatActivity {
 
             setProfilePictureClickListener();
 
-            // Populate profile with tweets from current user, i.e. self.
+            // Populate profile with Yeets from current user, i.e. self.
             createProfileHeader(userId);
         }
 
-        findViewById(R.id.networkOfflineText).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-        findViewById(R.id.rl).setVisibility(isOnline ? View.GONE : View.VISIBLE);
-
+        // Floating action button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#169cee")));
         fab.setOnClickListener(view -> {
@@ -128,7 +127,7 @@ public class UserProfileActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        retrieveYeets(userId);
+        retrieveYeets(userId, isOnline);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
@@ -136,7 +135,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 mSwipeRefreshLayout.setRefreshing(false);
             } else {
                 createProfileHeader(userId);
-                retrieveYeets(userId);
+                retrieveYeets(userId, isOnline);
             }
         });
         return isOnline;
@@ -165,9 +164,9 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
-        switch(requestCode) {
+        switch (requestCode) {
             case SELECT_PHOTO:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     Uri selectedImage = imageReturnedIntent.getData();
                     InputStream imageStream = null;
                     try {
@@ -201,7 +200,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
 
-                retrieveYeets(userId);
+                retrieveYeets(userId, true);
 
                 if (userId != null && userId.equals(ParseUser.getCurrentUser().getObjectId())) {
                     createProfileHeader(userId);
@@ -212,7 +211,6 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void createProfileHeader(String userId) {
-
         TextView topLevelFullName = (TextView) findViewById(R.id.fullName);
         TextView topLevelBio = (TextView) findViewById(R.id.bio);
         TextView topLevelBae = (TextView) findViewById(R.id.bae);
@@ -293,7 +291,7 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private void retrieveYeets(String userId) {
+    private void retrieveYeets(String userId, Boolean isOnline) {
         ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
         query.whereContains(ParseConstants.KEY_SENDER_AUTHOR_POINTER, userId);
         query.addDescendingOrder(ParseConstants.KEY_CREATED_AT);
@@ -307,6 +305,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
                 // We found messages!
                 mYeets = yeets;
+                ParseObject.pinAllInBackground(mYeets);
 
                 UserProfileAdapter adapter = new UserProfileAdapter(getApplicationContext(), yeets);
                 adapter.setHasStableIds(true);
@@ -314,6 +313,50 @@ public class UserProfileActivity extends AppCompatActivity {
                 header.attachTo(recyclerView);*/
                 recyclerView.setAdapter(adapter);
 
+                mSwipeRefreshLayout.setOnRefreshListener(() -> {
+                    if (!isOnline) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(getApplicationContext(), getString(R.string.cannot_retrieve_messages), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Date onRefreshDate = new Date();
+                        /*System.out.println(onRefreshDate.getTime());*/
+                        refreshYeets(userId, onRefreshDate, adapter);
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void refreshYeets(String userId, Date date, UserProfileAdapter adapter) {
+        ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.CLASS_YEET);
+        query.whereContains(ParseConstants.KEY_SENDER_AUTHOR_POINTER, userId);
+        query.orderByDescending("lastReplyUpdatedAt");
+        if (date != null)
+            query.whereLessThanOrEqualTo("createdAt", date);
+        query.setLimit(1000);
+        query.findInBackground((yeets, e) -> {
+
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+
+            if (e == null) {
+                // We found messages!
+                mYeets.removeAll(yeets);
+                mYeets.addAll(0, yeets); //This should append new messages to the top
+                adapter.notifyDataSetChanged();
+                ParseObject.pinAllInBackground(mYeets);
+
+                /*System.out.println(yeets);*/
+                if (recyclerView.getAdapter() == null) {
+                    adapter.setHasStableIds(true);
+                    recyclerView.setHasFixedSize(true);
+                    adapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    adapter.notifyDataSetChanged();
+                }
             }
         });
     }

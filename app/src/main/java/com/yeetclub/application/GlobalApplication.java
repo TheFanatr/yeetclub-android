@@ -38,8 +38,8 @@ public class GlobalApplication extends Application {
                 .applicationId(getString(R.string.parse_app_id))
                 .clientKey(getString(R.string.parse_client_key))
                 .server("https://parseapi.back4app.com/")
-
-        .build()
+                .enableLocalDataStore()
+                .build()
         );
 
         Parse.setLogLevel(Parse.LOG_LEVEL_DEBUG);

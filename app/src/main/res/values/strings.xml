@@ -6,7 +6,7 @@
 
     <string name="app_name">Yeet Club</string>
 
-    <string name="file_permissions">You need to enable file permissions to see most of the app. Click here to enable file permissions.</string>
+    <string name="file_permissions">You need to enable file permissions to see what your friends post. Click here to enable file permissions.</string>
 
     <string name="drawer_item_profile">Yofe</string>
     <string name="notifications_title">Yotificayshes</string>
@@ -64,5 +64,25 @@
     <string name="current_password">Current password</string>
     <string name="this_message_has_been_liked">This message has been liked</string>
     <string name="settings">Settings</string>
-    <string name="yeet_deleted">This Yeet was deleted :(</string>
+    <string name="yeet_deleted">Cannot retrieve messages at this time. Please try again later.</string>
+    <string name="cannot_retrieve_messages">Cannot retrieve messages at this time. Please try again later.</string>
+    <string name="anonymous_fullName">Anonymous Lose</string>
+    <string name="message_deleted">Message deleted</string>
+    <string name="more_replies">more replies</string>
+    <string name="notifications_message">This is where your friends send you love!</string>
+    <string name="notifications_prompt">You will receive your notifications here.</string>
+    <string name="more_reply">more reply</string>
+    <string name="option_1">Option 1</string>
+    <string name="value_1">Value 1</string>
+    <string name="option_2">Option 2</string>
+    <string name="value_2">Value 2</string>
+    <string name="option_3">Option 3</string>
+    <string name="value_3">Value 3</string>
+    <string name="value_4">Value 4</string>
+    <string name="option_4">Option 4</string>
+    <string name="choice_1">Choice 1</string>
+    <string name="choice_2">Choice 2</string>
+    <string name="choice_3">Choice 3</string>
+    <string name="choice_4">Choice 4</string>
+    <string name="create_poll">Create Poll</string>
 </resources>

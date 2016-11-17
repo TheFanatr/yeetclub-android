@@ -49,6 +49,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static android.view.View.GONE;
+import static com.yeetclub.android.R.raw.yeet;
+
 /**
  * Created by @santafebound on 2015-11-07.
  */
@@ -65,6 +68,8 @@ public class YeetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         assert getSupportActionBar() != null;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -192,13 +197,13 @@ public class YeetActivity extends AppCompatActivity {
                 submitRant.setVisibility(View.VISIBLE);
                 slideUp(submitRant);
 
-                submitComment.setVisibility(View.GONE);
+                submitComment.setVisibility(GONE);
                 slideDown(submitComment);
 
                 exitRant.setVisibility(View.VISIBLE);
                 slideUp(exitRant);
 
-                startRant.setVisibility(View.GONE);
+                startRant.setVisibility(GONE);
                 slideDown(startRant);
 
             });
@@ -221,6 +226,9 @@ public class YeetActivity extends AppCompatActivity {
             }
 
             finish();
+
+            findViewById(R.id.exitPoll).setVisibility(GONE);
+            findViewById(R.id.addOption).setVisibility(GONE);
 
         });
 
@@ -252,12 +260,22 @@ public class YeetActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_create_poll:
+                showPollOptions();
+                return true;
             case R.id.action_upload_image:
                 UploadImageToFeed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showPollOptions() {
+        findViewById(R.id.pollOption1TextInputLayout).setVisibility(View.VISIBLE);
+        findViewById(R.id.pollOption2TextInputLayout).setVisibility(View.VISIBLE);
+        findViewById(R.id.exitPoll).setVisibility(View.VISIBLE);
+        findViewById(R.id.addOption).setVisibility(View.VISIBLE);
     }
 
     public void UploadImageToFeed() {
@@ -301,7 +319,7 @@ public class YeetActivity extends AppCompatActivity {
                             Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
                             sendImage(yourSelectedImage, edt);
 
-                            findViewById(R.id.uploadImageCover).setVisibility(View.GONE);
+                            findViewById(R.id.uploadImageCover).setVisibility(GONE);
                         }
                     });
                     dialogBuilder.setNegativeButton("Skip", new DialogInterface.OnClickListener() {
@@ -321,7 +339,7 @@ public class YeetActivity extends AppCompatActivity {
                             Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
                             sendImage(yourSelectedImage, edt);
 
-                            findViewById(R.id.uploadImageCover).setVisibility(View.GONE);
+                            findViewById(R.id.uploadImageCover).setVisibility(GONE);
                         }
                     });
                     AlertDialog b = dialogBuilder.create();
@@ -338,7 +356,7 @@ public class YeetActivity extends AppCompatActivity {
             if (e == null) for (ParseObject userObject : user) {
 
                 userObject.put("isRanting", true);
-                userObject.saveInBackground();
+                userObject.saveEventually();
 
             }
         });
@@ -351,7 +369,7 @@ public class YeetActivity extends AppCompatActivity {
             if (e == null) for (ParseObject userObject : user) {
 
                 userObject.put("isRanting", false);
-                userObject.saveInBackground();
+                userObject.saveEventually();
 
             }
         });
@@ -409,7 +427,7 @@ public class YeetActivity extends AppCompatActivity {
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             message.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            message.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymous Lose");
+            message.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         message.put(ParseConstants.KEY_SENDER_AUTHOR_POINTER, ParseUser.getCurrentUser());
@@ -453,6 +471,9 @@ public class YeetActivity extends AppCompatActivity {
 
         if (isRanting == false) {
             finish();
+
+            findViewById(R.id.exitPoll).setVisibility(GONE);
+            findViewById(R.id.addOption).setVisibility(GONE);
         }
 
         if (isRanting == false) {
@@ -461,7 +482,7 @@ public class YeetActivity extends AppCompatActivity {
             int storedPreference = preferences.getInt("sound", 1);
             // System.out.println("Application Sounds: " + storedPreference);
             if (storedPreference != 0) {
-                final MediaPlayer mp = MediaPlayer.create(this, R.raw.yeet);
+                final MediaPlayer mp = MediaPlayer.create(this, yeet);
                 mp.start();
             }
         } else {
@@ -491,6 +512,11 @@ public class YeetActivity extends AppCompatActivity {
         return message;
     }
 
+    /*
+    //TODO
+    3. At least two poll options must be submitted with a Yeet when poll mode is activated
+    4. Button to iterate over number of poll options visible, i.e. 2, 3 and 4 (show/hide TextInputLayers)
+     */
     private ParseObject sendYeet(EditText myEditText, Boolean isRanting, String rantId) {
         ParseObject message = new ParseObject(ParseConstants.CLASS_YEET);
         message.put(ParseConstants.KEY_SENDER_ID, ParseUser.getCurrentUser().getObjectId());
@@ -499,7 +525,7 @@ public class YeetActivity extends AppCompatActivity {
         if (!(ParseUser.getCurrentUser().get("name").toString().isEmpty())) {
             message.put(ParseConstants.KEY_SENDER_FULL_NAME, ParseUser.getCurrentUser().get("name"));
         } else {
-            message.put(ParseConstants.KEY_SENDER_FULL_NAME, "Anonymous Lose");
+            message.put(ParseConstants.KEY_SENDER_FULL_NAME, R.string.anonymous_fullName);
         }
 
         message.put(ParseConstants.KEY_SENDER_AUTHOR_POINTER, ParseUser.getCurrentUser());
@@ -529,11 +555,16 @@ public class YeetActivity extends AppCompatActivity {
             message.put(ParseConstants.KEY_SENDER_PROFILE_PICTURE, ParseUser.getCurrentUser().getParseFile("profilePicture").getUrl());
         }
 
+        createPollObject(message);
+
         if (!(result.length() > 140 || result.length() <= 0)) {
-            message.saveInBackground();
+            message.saveEventually();
 
             if (isRanting == false) {
                 finish();
+
+                findViewById(R.id.exitPoll).setVisibility(GONE);
+                findViewById(R.id.addOption).setVisibility(GONE);
             }
 
             if (isRanting == false) {
@@ -542,7 +573,7 @@ public class YeetActivity extends AppCompatActivity {
                 int storedPreference = preferences.getInt("sound", 1);
                 // System.out.println("Application Sounds: " + storedPreference);
                 if (storedPreference != 0) {
-                    final MediaPlayer mp = MediaPlayer.create(this, R.raw.yeet);
+                    final MediaPlayer mp = MediaPlayer.create(this, yeet);
                     mp.start();
                 }
             } else {
@@ -559,6 +590,9 @@ public class YeetActivity extends AppCompatActivity {
 
             if (isRanting == false) {
                 finish();
+
+                findViewById(R.id.exitPoll).setVisibility(GONE);
+                findViewById(R.id.addOption).setVisibility(GONE);
 
                 Toast.makeText(getApplicationContext(), "Great yeet there, bub!", Toast.LENGTH_LONG).show();
             } else {
@@ -592,6 +626,53 @@ public class YeetActivity extends AppCompatActivity {
         return message;
     }
 
+
+    private void createPollObject(ParseObject message) {
+        EditText pollOption1 = (EditText) findViewById(R.id.pollOption1);
+        EditText pollOption2 = (EditText) findViewById(R.id.pollOption2);
+        EditText pollOption3 = (EditText) findViewById(R.id.pollOption3);
+        EditText pollOption4 = (EditText) findViewById(R.id.pollOption4);
+
+        if (!(pollOption1.getText().toString().isEmpty() && pollOption2.getText().toString().isEmpty())) {
+            ParseObject pollObject = new ParseObject(ParseConstants.CLASS_POLL);
+
+            pollObject.put(ParseConstants.KEY_POLL_OPTION1, pollOption1.getText().toString());
+            pollObject.put(ParseConstants.KEY_POLL_OPTION2, pollOption2.getText().toString());
+
+            if (!(pollOption3.getText().toString().isEmpty())) {
+                pollObject.put(ParseConstants.KEY_POLL_OPTION3, pollOption3.getText().toString());
+            }
+
+            if (!(pollOption4.getText().toString().isEmpty())) {
+                pollObject.put(ParseConstants.KEY_POLL_OPTION4, pollOption4.getText().toString());
+            }
+
+            String[] votedBy = new String[0];
+            pollObject.put("votedBy", Arrays.asList(votedBy));
+
+            String[] value1Array = new String[0];
+            pollObject.put("value1Array", Arrays.asList(value1Array));
+
+            String[] value2Array = new String[0];
+            pollObject.put("value2Array", Arrays.asList(value2Array));
+
+            String[] value3Array = new String[0];
+            pollObject.put("value3Array", Arrays.asList(value3Array));
+
+            String[] value4Array = new String[0];
+            pollObject.put("value4Array", Arrays.asList(value4Array));
+
+            try {
+                pollObject.save();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            message.put(ParseConstants.KEY_POLL_OBJECT, pollObject);
+        }
+    }
+
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -601,35 +682,62 @@ public class YeetActivity extends AppCompatActivity {
 
             EditText myEditText = (EditText) findViewById(R.id.addCommentTextField);
             if (!(myEditText.getText().toString().isEmpty())) {
-                // Send everyone in the group a push notification
-                sendRantStopPushNotification();
+                sendRantStopPushNotification(); // Send everyone in the group a push notification
                 Toast.makeText(getApplicationContext(), "Doesn't that just nicely feel betts?", Toast.LENGTH_LONG).show();
             }
         }
 
-        // Turn off ranting when activity is destroyed so users aren't locked into rant mode
-        turnOffRanting();
+        turnOffRanting(); // Turn off ranting when activity is destroyed so users aren't locked into rant mode
 
     }
 
 
-    public void TitleClicked(View view) {
+    public void ExitPoll(View view) {
+        findViewById(R.id.pollOption1TextInputLayout).setVisibility(GONE);
+        findViewById(R.id.pollOption2TextInputLayout).setVisibility(GONE);
+        findViewById(R.id.pollOption3TextInputLayout).setVisibility(GONE);
+        findViewById(R.id.pollOption4TextInputLayout).setVisibility(GONE);
+        findViewById(R.id.exitPoll).setVisibility(GONE);
+        findViewById(R.id.addOption).setVisibility(GONE);
+    }
 
+
+    public void TitleClicked(View view) {
         Boolean isRanting = ParseUser.getCurrentUser().getBoolean("isRanting");
         if (isRanting) {
 
             EditText myEditText = (EditText) findViewById(R.id.addCommentTextField);
             if (!(myEditText.getText().toString().isEmpty())) {
-                // Send everyone in the group a push notification
-                sendRantStopPushNotification();
+                sendRantStopPushNotification(); // Send everyone in the group a push notification
                 Toast.makeText(getApplicationContext(), "Doesn't that just nicely feel betts?", Toast.LENGTH_LONG).show();
             }
         }
 
-        // Turn off ranting when activity is destroyed so users aren't locked into rant mode
-        turnOffRanting();
-
+        turnOffRanting(); // Turn off ranting when activity is destroyed so users aren't locked into rant mode
         finish();
+
+        findViewById(R.id.exitPoll).setVisibility(GONE);
+        findViewById(R.id.addOption).setVisibility(GONE);
+    }
+
+
+    int index = 2;
+    public void AddOption(View view) {
+        switch (index) {
+            case 0:
+                index = 1;
+                findViewById(R.id.pollOption3TextInputLayout).setVisibility(View.VISIBLE);
+                break;
+            case 1:
+                index = 2;
+                findViewById(R.id.pollOption4TextInputLayout).setVisibility(View.VISIBLE);
+                break;
+            case 2:
+                index = 0;
+                findViewById(R.id.pollOption3TextInputLayout).setVisibility(View.GONE);
+                findViewById(R.id.pollOption4TextInputLayout).setVisibility(View.GONE);
+                break;
+        }
     }
 }
 

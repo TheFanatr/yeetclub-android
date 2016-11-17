@@ -4,6 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/action_create_poll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_create_poll"
+        android:menuCategory="secondary"
+        android:title="@string/create_poll"
+        app:showAsAction="ifRoom" />
+
+
+    <item
         android:id="@+id/action_upload_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

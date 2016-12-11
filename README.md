@@ -335,13 +335,13 @@ Consider contributing to the following classes: **1) Fragment1** (the feed), **2
 
 ~~Cacheing data for offline viewing could be another area to work on. See [Take Your App Offline with Parse Local Datastore](http://blog.parse.com/announcements/take-your-app-offline-with-parse-local-datastore/) for some useful information.~~ (Done, as of 2016-10-27).
 
-### 5.0.2 Notifications Stacking (Background Job)
+~~### 5.0.2 Notifications Stacking (Background Job)~~
 
-Currently, notifications come one at a time. If a user receives multiple notifications they are forced to manually clear each notification individually.
+~~Currently, notifications come one at a time. If a user receives multiple notifications they are forced to manually clear each notification individually.
 
-Instead, we want notifications to stack in one group notification, where the the number of notifications is incremented. The new group notification should be titled "# new interactions" and provide a preview of each of the most recent yeets. Clicking on this combined notification will bring the user to the notifications activity.
+Instead, we want notifications to stack in one group summary notification, where the the number of notifications is incremented. The new group notification should be titled "# new interactions" and provide a preview of each of the most recent yeets. Clicking on this combined notification will bring the user to the notifications activity.
 
-Twitter is an excellent example of how this should work. Android provides a way to do this (https://opbeat.com/community/posts/building-stack-notifications-on-android/) but we will need to integrate with Parse Cloud.
+Twitter is an excellent example of how this should work. Android provides a way to do this (https://opbeat.com/community/posts/building-stack-notifications-on-android/) but we will need to integrate with Parse Cloud.~~ (Done, to be included in the next update).
 
 <hr>
 

@@ -11,19 +11,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@id/toolbar"
+        android:layout_marginTop="250dp"
         android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/noNotificationsMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="150dp"
-            android:gravity="center_vertical|center_horizontal"
-            android:padding="10dp"
-            android:text="@string/notifications_message"
-            android:textSize="18sp"
-            android:typeface="sans"
-            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/noNotificationsImage"
@@ -36,11 +25,20 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/noNotificationsMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/notifications_message"
+            android:textSize="18sp"
+            android:typeface="sans"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/noNotificationsMessage2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
-            android:padding="10dp"
             android:text="@string/notifications_prompt"
             android:textSize="14sp"
             android:typeface="sans"
@@ -48,11 +46,10 @@
 
     </LinearLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <com.yalantis.phoenix.PullToRefreshView
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
         android:layout_marginTop="100dp">
 
         <android.support.v7.widget.RecyclerView
@@ -60,11 +57,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fadeScrollbars="false"
-            android:paddingTop="0dp"
             android:scrollbarSize="10dp"
             android:scrollbarThumbVertical="@drawable/custom_scroll_style"
             android:scrollbars="vertical" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </com.yalantis.phoenix.PullToRefreshView>
 
 </RelativeLayout>

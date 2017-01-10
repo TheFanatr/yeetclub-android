@@ -43,6 +43,18 @@ repositories {
 }
 
 dependencies {
+    // Retrofit HTTP API
+    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0-beta4'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
+
+    // ReactiveX
+    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxandroid:1.2.1'
+
+    // Pull to Refresh
+    compile 'com.yalantis:phoenix:1.2.3'
 
     // Subsampling Scale ImageView
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'

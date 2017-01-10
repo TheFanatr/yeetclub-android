@@ -13,7 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.yeetclub.android.R;
-import com.yeetclub.utility.NetworkHelper;
+import com.yeetclub.android.utility.NetworkHelper;
 
 import java.util.List;
 

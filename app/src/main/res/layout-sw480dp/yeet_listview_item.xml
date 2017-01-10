@@ -126,7 +126,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal|center_vertical">
 
-                <com.yeetclub.android.ResizeableImageView
+                <com.yeetclub.android.utility.ResizeableImageView
                     android:id="@+id/messageImage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -642,7 +642,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal|center_vertical">
 
-                <com.yeetclub.android.ResizeableImageView
+                <com.yeetclub.android.utility.ResizeableImageView
                     android:id="@+id/messageImage2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -855,7 +855,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal|center_vertical">
 
-                <com.yeetclub.android.ResizeableImageView
+                <com.yeetclub.android.utility.ResizeableImageView
                     android:id="@+id/messageImage3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

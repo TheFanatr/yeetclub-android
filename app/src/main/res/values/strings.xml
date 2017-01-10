@@ -2,6 +2,8 @@
 <resources>
     <string name="parse_app_id" translatable="false"></string>
     <string name="parse_client_key" translatable="false"></string>
+    <string name="parse_rest_api_key" translatable="false"></string>
+
     <string name="facebook_app_id" translatable="false"></string>
 
     <string name="app_name">Yeet Club</string>
@@ -85,4 +87,11 @@
     <string name="choice_3">Choice 3</string>
     <string name="choice_4">Choice 4</string>
     <string name="create_poll">Create Poll</string>
+    <string name="delete">Delete</string>
+    <string name="do_you_want_to_delete_this_yeet">Do you want to delete this Yeet?</string>
+    <string name="points">Points:</string>
+    <string name="number_of_points_accumulated">The number of points this user has accumulated</string>
+    <string name="rank">Rank:</string>
+    <string name="my_first_yeet">#myFirstYeet</string>
+    <string name="is_bae"> IS BAE</string>
 </resources>

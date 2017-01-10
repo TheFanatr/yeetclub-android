@@ -14,7 +14,7 @@
         </Preference>
 
         <Preference
-            android:title="Share Yecret Key"
+            android:title="Share Group Key"
             android:summary=""
             android:key="shareKey">
         </Preference>

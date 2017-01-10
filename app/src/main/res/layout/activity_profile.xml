@@ -50,6 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="top|start|center_vertical|center_horizontal"
@@ -71,8 +73,6 @@
                     android:layout_width="87dp"
                     android:layout_height="87dp"
                     android:layout_gravity="center_horizontal|center_vertical"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginStart="15dp"
                     android:clickable="true"
                     android:contentDescription="@string/content_desc_profile_picture"
                     android:scaleType="fitXY"
@@ -81,10 +81,14 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginStart="0dp"
                     android:contentDescription="@string/null_content_desc"
                     android:src="@drawable/frame" />
 
             </FrameLayout>
+
+            <!-- Insert Follow User Button Here -->
 
         </LinearLayout>
 
@@ -132,7 +136,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/websiteLink"
-            android:paddingBottom="5dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:text="@string/n"
@@ -140,11 +143,12 @@
             android:textSize="14sp"
             android:typeface="sans" />
 
-        <android.support.v4.widget.SwipeRefreshLayout
+        <com.yalantis.phoenix.PullToRefreshView
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/bae">
+            android:layout_below="@+id/bae"
+            android:paddingTop="10dp">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
@@ -155,7 +159,7 @@
                 android:scrollbarThumbVertical="@drawable/custom_scroll_style"
                 android:scrollbars="vertical" />
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </com.yalantis.phoenix.PullToRefreshView>
 
     </RelativeLayout>
 

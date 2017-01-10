@@ -2,13 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.yeetclub.android"
-    android:versionCode="1"
-    android:versionName="1.0">
+    android:versionCode="100"
+    android:versionName="7.3">
 
     <uses-sdk
         android:minSdkVersion="15"
         android:targetSdkVersion="24"
-        tools:ignore="GradleOverrides" />
+        tools:ignore="GradleOvetionrrides" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -33,25 +33,16 @@
     <uses-permission android:name="com.yeetclub.android.permission.C2D_MESSAGE" />
 
     <application
-        android:name="com.yeetclub.application.GlobalApplication"
+        android:name=".application.GlobalApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
+        <!-- ########## METADATA ########## -->
         <meta-data
             android:name="com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ENABLED"
             android:value="true" />
-
-        <activity
-            android:name="com.parse.ui.ParseLoginActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTop" >
-            <meta-data
-                android:name="com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ENABLED"
-                android:value="true" />
-        </activity>
-
         <meta-data
             android:name="com.parse.APPLICATION_ID"
             android:value="@string/parse_app_id" />
@@ -61,9 +52,24 @@
         <meta-data
             android:name="com.yeetclub.android.notification_icon"
             android:resource="@drawable/ic_launcher" />
+        <meta-data
+            android:name="com.parse.push.gcm_sender_id"
+            android:value="id:692686822938" />
+        <meta-data
+            android:name="com.parse.push.notification_icon"
+            android:resource="@drawable/ic_stat_ic_no_notifications" />
 
+        <!-- ########## ACTIVITIES ########## -->
         <activity
-            android:name=".DispatchActivity"
+            android:name="com.parse.ui.ParseLoginActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop" >
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ENABLED"
+                android:value="true" />
+        </activity>
+        <activity
+            android:name=".activity.DispatchActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
@@ -72,33 +78,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.yeetclub.android.YeetActivity"
+            android:name="com.yeetclub.android.activity.YeetActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName="com.yeetclub.android.YeetActivity"
+            android:parentActivityName="com.yeetclub.android.activity.YeetActivity"
             android:screenOrientation="portrait" >
         </activity>
-
         <activity
-            android:name="com.yeetclub.android.EditProfileActivity"
+            android:name="com.yeetclub.android.activity.EditProfileActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName="com.yeetclub.android.EditProfileActivity"
+            android:parentActivityName="com.yeetclub.android.activity.EditProfileActivity"
             android:screenOrientation="portrait" >
         </activity>
-
         <activity
-            android:name="com.yeetclub.android.ChangePasswordActivity"
+            android:name="com.yeetclub.android.activity.ChangePasswordActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName="com.yeetclub.android.ChangePasswordActivity"
+            android:parentActivityName="com.yeetclub.android.activity.ChangePasswordActivity"
             android:screenOrientation="portrait" >
         </activity>
-
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTask"
@@ -109,67 +111,45 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.yeetclub.feed.FeedActivity"
+            android:name=".activity.UserProfileActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTask"
+            android:parentActivityName=".activity.UserProfileActivity"
             android:screenOrientation="portrait" >
         </activity>
-
         <activity
-            android:name="com.yeetclub.profile.UserProfileActivity"
+            android:name="com.yeetclub.android.activity.UserSettingsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:parentActivityName="com.yeetclub.profile.UserProfileActivity"
+            android:parentActivityName="com.yeetclub.android.activity.UserSettingsActivity"
             android:screenOrientation="portrait" >
         </activity>
-
         <activity
-            android:name="com.yeetclub.android.UserSettingsActivity"
+            android:name=".activity.CommentActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:parentActivityName="com.yeetclub.android.UserSettingsActivity"
+            android:parentActivityName=".activity.CommentActivity"
             android:screenOrientation="portrait" >
         </activity>
-
         <activity
-            android:name="com.yeetclub.comment.CommentActivity"
+            android:name="com.yeetclub.android.activity.MediaPreviewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:parentActivityName="com.yeetclub.comment.CommentActivity"
+            android:parentActivityName="com.yeetclub.android.activity.MediaPreviewActivity"
             android:screenOrientation="portrait" >
         </activity>
-
         <activity
-            android:name="com.yeetclub.android.MediaPreviewActivity"
+            android:name=".activity.ReplyActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:parentActivityName="com.yeetclub.android.MediaPreviewActivity"
+            android:parentActivityName=".activity.ReplyActivity"
             android:screenOrientation="portrait" >
         </activity>
-
-        <activity
-            android:name="com.yeetclub.notifications.NotificationsActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name"
-            android:parentActivityName="com.yeetclub.feed.FeedActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-
-        <activity
-            android:name="com.yeetclub.comment.ReplyActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name"
-            android:parentActivityName="com.yeetclub.comment.ReplyActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-
         <activity
             android:name=".rss.RssActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -178,28 +158,20 @@
             android:screenOrientation="portrait" >
         </activity>
 
+        <!-- ########## PROVIDERS ########## -->
         <provider
-            android:name="com.yeetclub.utility.YeetClubContentProvider"
-            android:authorities="com.yeetclub"
+            android:name=".utility.YeetClubContentProvider"
+            android:authorities="com.yitter"
             android:enabled="true"
             android:exported="true" >
         </provider>
 
-        <!-- GCM setup -->
-        <meta-data
-            android:name="com.parse.push.gcm_sender_id"
-            android:value="id:YOUR_GCM_SENDER_ID" />
-
-        <!-- replace @drawable/push_icon with your push icon identifier -->
-        <meta-data
-            android:name="com.parse.push.notification_icon"
-            android:resource="@drawable/ic_stat_ic_no_notifications" />
-
+        <!-- ########## SERVICES ########## -->
         <service android:name="com.parse.PushService" />
 
-        <!-- Custom Receiver -->
+        <!-- ########## RECEIVERS ########## -->
         <receiver
-            android:name="com.yeetclub.application.Receiver"
+            android:name=".application.Receiver"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
@@ -207,23 +179,18 @@
                 <action android:name="com.parse.push.intent.OPEN" />
             </intent-filter>
         </receiver>
-        <!-- End Custom Receiver -->
-
         <receiver android:name="com.parse.ParseBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-
-                <!-- IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
                 <category android:name="com.yeetclub.android" />
             </intent-filter>
         </receiver>

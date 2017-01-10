@@ -10,6 +10,6 @@
     <bool name="ga_dryRun">false</bool>
 
     <!-- The screen names that will appear in reports -->
-    <string name="com.yeetclub.android.MainActivity">Main Activity</string>
+    <string name="com.yeetclub.android.activity.MainActivity">Main Activity</string>
     <string name="com.yeetclub.android.PurchaseActivity">Purchase Activity</string>
 </resources>

@@ -86,6 +86,8 @@
 
             </FrameLayout>
 
+            <!-- Insert Follow User Button Here -->
+
         </LinearLayout>
 
         <TextView
@@ -132,7 +134,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/websiteLink"
-            android:paddingBottom="5dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:text="@string/n"
@@ -140,11 +141,12 @@
             android:textSize="14sp"
             android:typeface="sans" />
 
-        <android.support.v4.widget.SwipeRefreshLayout
+        <com.yalantis.phoenix.PullToRefreshView
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/bae">
+            android:layout_below="@+id/bae"
+            android:paddingTop="10dp">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
@@ -155,7 +157,7 @@
                 android:scrollbarThumbVertical="@drawable/custom_scroll_style"
                 android:scrollbars="vertical" />
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </com.yalantis.phoenix.PullToRefreshView>
 
     </RelativeLayout>
 

@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+
 import java.util.List;
 
 /**
@@ -15,12 +16,12 @@ import java.util.List;
 public class ListListener implements OnItemClickListener {
     // Our listener will contain a reference to the list of RSS Items
     // List item's reference
-    List<RssItem> listItems;
+    List<com.yeetclub.android.rss.RssItem> listItems;
     // And a reference to a calling activity
     // Calling activity reference
     Activity activity;
     /** We will set those references in our constructor.*/
-    public ListListener(List<RssItem> aListItems, Activity anActivity) {
+    public ListListener(List<com.yeetclub.android.rss.RssItem> aListItems, Activity anActivity) {
         listItems = aListItems;
         activity  = anActivity;
     }

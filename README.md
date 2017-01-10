@@ -35,7 +35,7 @@ Yeet Club is an open-source Android application for small, private groups of exc
 
 If you are interested in contributing to the main repository here, you could very well see your changes reflected in the Yeet Club app at https://play.google.com/store/apps/details?id=com.yeetclub.android&hl=en. If you love Yeet Club and want to buy me coffee, send some beans this a-way: https://www.paypal.me/hypercycle
 
-Yeet Club is an open-source Android application for small, private groups of exclusive friends. It works a lot like Twitter. My aim in creating Yeet Club was to create a non-synchronous messaging application that allowed my small group of friends to enjoy the benefits of Twitter without having to rely on their services. Given that 10% of Twitter's 100 million daily active users also enjoy private accounts, I thought it would be interesting to see how a truly private alternative might play out. I wonder, what percentage of Twitter's 10 million private users would be interested in a more customized experience?
+Yeet Club is an open-source Android application for small, private groups of exclusive friends. It works a lot like Twitter. My aim in creating Yeet Club was to create a synchronous messaging application that allowed my small group of friends to enjoy the benefits of Twitter without having to rely on their services. Given that 10% of Twitter's 100 million daily active users also enjoy private accounts, I thought it would be interesting to see how a truly private alternative might play out. I wonder, what percentage of Twitter's 10 million private users would be interested in a more customized experience?
 
 Well, we were. So we added funny sounds, and included an RSS feed from a local news outlet to stay up to date for fun. We found that the 140 character limit was awesome for getting our thoughts off our chests without committing to grandiose explanations for how or why we felt what we felt, and so decided to leave that be (kind of like a condensed private journal without the intrusiveness of a "live" messaging application). But there's no reason that you need to use the same constraints (Yeet Club is open-source after all)! There is also a built-in rant feature that lets you send multiple messages in quick succession while notifying your friends that you're about to really speak your mind (lol!). Frankly, given the personalized nature of Yeet Club, I wouldn't be surprised if it found extensive use in counseling or group therapy. It's not that we're crazy, but having our own application definitely provides some peace of mind and let's us add and change things as we please.
 
@@ -337,11 +337,11 @@ Consider contributing to the following classes: **1) Fragment1** (the feed), **2
 
 ### 5.0.2 Notifications Stacking (Background Job)
 
-Currently, notifications come one at a time. If a user receives multiple notifications they are forced to manually clear each notification individually.
+~~Currently, notifications come one at a time. If a user receives multiple notifications they are forced to manually clear each notification individually.~~
 
-Instead, we want notifications to stack in one group notification, where the the number of notifications is incremented. The new group notification should be titled "# new interactions" and provide a preview of each of the most recent yeets. Clicking on this combined notification will bring the user to the notifications activity.
+~~Instead, we want notifications to stack in one group summary notification, where the the number of notifications is incremented. The new group notification should be titled "# new interactions" and provide a preview of each of the most recent yeets. Clicking on this combined notification will bring the user to the notifications activity.~~
 
-Twitter is an excellent example of how this should work. Android provides a way to do this (https://opbeat.com/community/posts/building-stack-notifications-on-android/) but we will need to integrate with Parse Cloud.
+~~Twitter is an excellent example of how this should work. Android provides a way to do this (https://opbeat.com/community/posts/building-stack-notifications-on-android/) but we will need to integrate with Parse Cloud.~~ (Done, to be included in the next update).
 
 <hr>
 
